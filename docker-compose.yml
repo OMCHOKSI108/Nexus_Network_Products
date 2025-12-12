@@ -1,0 +1,31 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    restart: always
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - N8N_USER_MANAGEMENT_DISABLED=false
+      - N8N_ENCRYPTION_KEY=supersecretkey12345678901234567890
+      - GENERIC_TIMEZONE=America/New_York
+      - TZ=America/New_YORK
+      - N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
+      - N8N_RUNNERS_ENABLED=true
+
+      # 👇 THIS is the important one
+      - WEBHOOK_URL=https://5cc9dc870f6a.ngrok-free.app
+
+      # Optional but fine to keep:
+      - N8N_HOST=5cc9dc870f6a.ngrok-free.app
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=https
+      - N8N_TRUSTED_PROXIES=loopback,uniquelocal,linklocal
+
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - D:\OM\AI-AUTOMATION-WORKFLOWS\CUSTOMER_SUPPORT_CHATBOT\n8n_data:/workspace
+
+volumes:
+  n8n_data:
+    driver: local
