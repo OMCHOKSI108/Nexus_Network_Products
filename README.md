@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![NexusNetwork Logo](https://via.placeholder.com/200x100/4F46E5/FFFFFF?text=NexusNetwork)
+![NexusNetwork Logo](frontend\public\image_readme.svg)
 
 **A Full-Stack E-Commerce Platform Built with Modern Technologies**
 
