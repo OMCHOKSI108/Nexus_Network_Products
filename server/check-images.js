@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Product = require('./models/Product');
 
-const MONGODB_URI = 'mongodb+srv://yatishcjain2005:passwordhere@cluster0.b5wtu.mongodb.net/nexusnetwork?retryWrites=true&w=majority';
+const MONGODB_URI = 'mongodb+srv://artist:Artist@cluster0.vkvlkj0.mongodb.net/?appName=Cluster0';
 
 async function checkProducts() {
   try {
