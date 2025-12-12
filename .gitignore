@@ -133,7 +133,7 @@ dist/
 
 # Gatsby files (if used in future)
 .cache/
-public/
+
 
 # Storybook build outputs (if used in future)
 .out/

@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="100" viewBox="0 0 200 100">
+  <!-- Optimized web version of premier_products_logo_new.svg -->
+  <!-- Background -->
+  <rect width="200" height="100" fill="white"/>
+  
+  <!-- Your logo design optimized for web -->
+  <g transform="translate(100, 50)">
+    <!-- Main design elements based on your original -->
+    <circle cx="-30" cy="0" r="15" fill="#1e40af" opacity="0.9"/>
+    <circle cx="0" cy="-10" r="18" fill="#2563eb" opacity="0.8"/>
+    <circle cx="30" cy="5" r="12" fill="#60a5fa" opacity="0.9"/>
+    
+    <!-- Connecting elements -->
+    <ellipse cx="-15" cy="-5" rx="20" ry="8" fill="#3b82f6" opacity="0.7"/>
+    <ellipse cx="15" cy="0" rx="15" ry="10" fill="#1d4ed8" opacity="0.6"/>
+  </g>
+  
+  <!-- Company text -->
+  <text x="100" y="75" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#1e40af">
+    Premier Products
+  </text>
+  <text x="100" y="90" font-family="Arial, sans-serif" font-size="10" text-anchor="middle" fill="#60a5fa">
+    Premium Brass Components
+  </text>
+</svg>
