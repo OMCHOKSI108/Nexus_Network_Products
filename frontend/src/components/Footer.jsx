@@ -9,7 +9,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <img src="\frontend\public\image_readme.svg.svg" alt="NexusNetwork" className="h-10 w-20 object-contain" />
+              <img src="\frontend\public\image.png" alt="NexusNetwork" className="h-10 w-20 object-contain" />
               <div>
                 <h3 className="text-xl font-bold text-white">NexusNetwork</h3>
                 <p className="text-gray-400 text-sm">Premium Brass Parts</p>

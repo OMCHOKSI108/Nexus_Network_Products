@@ -38,7 +38,7 @@ const Navbar = ({ user, isLoggedIn, onLogout, onOpenLogin, onOpenCart, cartUpdat
           <div className="flex items-center space-x-3">
             {/* Your custom logo */}
             <img 
-              src="/frontend\public\image_readme.svg.svg" 
+              src="/frontend/public/image.png" 
               alt="NexusNetwork Logo" 
               className="h-16 w-32 object-contain"
               onError={(e) => {
