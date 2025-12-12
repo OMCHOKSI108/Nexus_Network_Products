@@ -1,0 +1,14 @@
+{
+  "name": "Brass Elbow Fitting 90°",
+  "description": "High-quality brass elbow fitting for 90-degree pipe connections. Perfect for plumbing and industrial applications.",
+  "price": 35.99,
+  "category": "brass fitting",
+  "image": "/images/products/brass-fitting/brass-fitting-1.jpg",
+  "stockQuantity": 100,
+  "specifications": {
+    "material": "Brass",
+    "dimensions": "1/2 inch",
+    "weight": "150g",
+    "finish": "Natural Brass"
+  }
+}

@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: nexusnetwork-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3004
+      - key: DB_USER
+        sync: false
+      - key: DB_PASS
+        sync: false
+      - key: DB_CLUSTER
+        sync: false
+      - key: DB_NAME
+        value: NexusNetwork
+      - key: DB_APPNAME
+        value: NexusNetwork
+      - key: JWT_SECRET
+        generateValue: true
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
