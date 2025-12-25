@@ -112,9 +112,9 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
       const img = product.image;
       // If it's an absolute URL, return as-is
       if (/^https?:\/\//i.test(img)) return img;
-      // If it's a server-relative uploads path that points to `/images`, return it as-is
+      // If it's a server-relative path that points to `/images` or `/products`, return it as-is
       // so the frontend (dev server or built site) can serve it from its own public folder.
-      if (img.startsWith('/images')) {
+      if (img.startsWith('/images') || img.startsWith('/products')) {
         return img;
       }
       // If it's any other server-relative path, prefix with UPLOADS_BASE
