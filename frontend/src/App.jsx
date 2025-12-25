@@ -15,6 +15,7 @@ import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import AdminProducts from './components/AdminProducts';
 import AdminOrders from './components/AdminOrders';
+import Profile from './components/Profile';
 import authService from './services/authService';
 import { NotificationProvider, useNotification } from './components/Notification';
 
