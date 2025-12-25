@@ -1,0 +1,109 @@
+{
+  "info": {
+    "name": "Nexus Network Products API",
+    "_postman_id": "nexus-network-products-collection",
+    "description": "Common requests for Nexus Network Products backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /api (health)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api"
+        }
+      }
+    },
+    {
+      "name": "GET /api/products (list)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/products?limit=10"
+        }
+      }
+    },
+    {
+      "name": "GET /api/products/:id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/api/products/{{productId}}"
+        }
+      }
+    },
+    {
+      "name": "POST /api/users/register",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"test123\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/users/register"
+        }
+      }
+    },
+    {
+      "name": "POST /api/users/login (get token)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/users/login"
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// If login returns a token, save it to environment variable 'authToken'",
+              "try {",
+              "  var j = pm.response.json();",
+              "  var token = j.token || (j.data && j.data.token) || (j.accessToken) || null;",
+              "  if (token) pm.environment.set('authToken', token);",
+              "} catch(e) {}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /api/products (auth optional)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{authToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/products?limit=10"
+        }
+      }
+    }
+  ]
+}

@@ -70,7 +70,20 @@ const DB_APPNAME = process.env.DB_APPNAME || "NexusNetwork";
 
 // Use provided MONGODB_URI or default to local MongoDB with scheme
 let mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/NexusNetwork";
-// Ensure the connection string includes a valid scheme
+// If running in production, require a real MONGODB_URI (not localhost)
+const isProd = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
+if (isProd) {
+  if (!process.env.MONGODB_URI) {
+    console.error('❌ MONGODB_URI is not set. Set the MONGODB_URI env var in your Render service to your MongoDB Atlas connection string.');
+    console.error('   Example: mongodb+srv://<user>:<pass>@cluster0.example.mongodb.net/<dbname>?retryWrites=true&w=majority');
+    process.exit(1);
+  }
+  if (process.env.MONGODB_URI.includes('localhost') || process.env.MONGODB_URI.includes('127.0.0.1')) {
+    console.error('❌ MONGODB_URI appears to point to localhost. In production you must use a remote Atlas URI.');
+    process.exit(1);
+  }
+}
+// Ensure the connection string includes a valid scheme for local dev convenience
 if (!mongoURI.startsWith("mongodb://") && !mongoURI.startsWith("mongodb+srv://")) {
   mongoURI = "mongodb://" + mongoURI;
 }
