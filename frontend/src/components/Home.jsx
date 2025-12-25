@@ -116,19 +116,13 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
 
                   {/* Right-side Brand Logo — positioned relative to the hero column */}
                   <img
-  src="/img0.png"
-  alt="NexusNetwork Logo"
-  className="
-    hidden md:block
-    absolute
-    right-50
-    -translate-y-1/2
-    w-94 h-94
-    object-contain
-    drop-shadow-xl
-  "
-  onError={(e) => { e.currentTarget.style.display = 'none'; }}
-/>
+                    src={import.meta.env.BASE_URL + 'img0.png'}
+                    alt="NexusNetwork Logo"
+                    className={
+                      "hidden md:block absolute right-50 -translate-y-1/2 w-94 h-94 object-contain drop-shadow-xl"
+                    }
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
 
                 </div>
               </div>
