@@ -19,15 +19,24 @@ const userSchema = new mongoose.Schema(
     name: { type: String, trim: true },
     profileImage: { type: String, default: '' },
     phone: { type: String, trim: true, default: '' },
+    secondaryPhone: { type: String, trim: true, default: '' },
+    company: { type: String, trim: true, default: '' },
+    gstNumber: { type: String, trim: true, default: '' },
+    dob: { type: Date },
     address: {
       fullName: { type: String, trim: true, default: '' },
-      addressLine: { type: String, trim: true, default: '' },
+      addressLine1: { type: String, trim: true, default: '' },
+      addressLine2: { type: String, trim: true, default: '' },
       city: { type: String, trim: true, default: '' },
       state: { type: String, trim: true, default: '' },
       postalCode: { type: String, trim: true, default: '' },
       country: { type: String, trim: true, default: '' },
       phone: { type: String, trim: true, default: '' }
     },
+    socialLinks: { type: Object, default: {} },
+    // Password reset OTP
+    resetOtp: { type: String },
+    resetOtpExpires: { type: Date },
     email: {
       type: String,
       required: true,

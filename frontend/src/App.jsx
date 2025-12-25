@@ -16,6 +16,7 @@ import AdminDashboard from './components/AdminDashboard';
 import AdminProducts from './components/AdminProducts';
 import AdminOrders from './components/AdminOrders';
 import Profile from './components/Profile';
+import Settings from './components/Settings';
 import authService from './services/authService';
 import { NotificationProvider, useNotification } from './components/Notification';
 
@@ -239,6 +240,7 @@ function AppContent() {
           <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/orders" element={<MyOrders />} />
         </Routes>
   <Footer />

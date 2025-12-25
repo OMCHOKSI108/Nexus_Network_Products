@@ -52,11 +52,13 @@ const MyOrders = () => {
   };
 
   const handlePayNow = async (orderId) => {
-    if (!window.confirm('Simulate payment now and generate receipt?')) return;
+    if (!window.confirm('Proceed to payment?')) return;
     try {
+      setLoading(true);
+      // show processing animation by setting a local state
       const res = await orderService.pay(orderId, 'card');
       if (res.success) {
-        addToast('Payment successful and receipt generated', 'success');
+        addToast('Payment successful', 'success');
         loadOrders(page);
       } else {
         addToast(res.message || 'Payment failed', 'error');
@@ -64,6 +66,8 @@ const MyOrders = () => {
     } catch (e) {
       console.error('Payment error', e);
       addToast('Payment failed', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 

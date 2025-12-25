@@ -22,16 +22,19 @@
 // testRegistration();
 
 
-const { MongoClient } = require('mongodb');
-const uri = process.env.MONGODB_URI || 'mongodb+srv://omchoksi-user:rehman@cluster0.cesr8.mongodb.net/NexusNetwork?retryWrites=true&w=majority';
-(async () => {
-  try {
-    const client = new MongoClient(uri);
-    await client.connect();
-    console.log('Mongo connected');
-    await client.db().admin().ping();
-    await client.close();
-  } catch (e) {
-    console.error('Mongo test error:', e);
-  }
+(function(){
+  const { MongoClient } = require('mongodb');
+  // Prefer explicit MONGODB_URI; fall back to local MongoDB for development
+  const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/NexusNetwork';
+  (async () => {
+    try {
+      const client = new MongoClient(uri);
+      await client.connect();
+      console.log('Mongo connected');
+      await client.db().admin().ping();
+      await client.close();
+    } catch (e) {
+      console.error('Mongo test error:', e);
+    }
+  })();
 })();

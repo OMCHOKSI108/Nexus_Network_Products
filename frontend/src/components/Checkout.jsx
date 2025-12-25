@@ -20,6 +20,7 @@ const Checkout = () => {
     pincode: '',
     orderNotes: ''
   });
+  const [paymentMethod, setPaymentMethod] = useState('cod');
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
   const { addToast } = useNotification();
@@ -41,8 +42,13 @@ const Checkout = () => {
         if (userProfile.success) {
           setOrderForm(prev => ({
             ...prev,
-            fullName: userProfile.user.username || '',
-            email: userProfile.user.email || ''
+            fullName: userProfile.user.name || userProfile.user.username || '',
+            email: userProfile.user.email || '',
+            phone: userProfile.user.phone || '',
+            address: (userProfile.user.address && (userProfile.user.address.addressLine1 || userProfile.user.address.address)) ? (userProfile.user.address.addressLine1 || userProfile.user.address.address || '') : (userProfile.user.address?.addressLine1 || userProfile.user.address?.address || ''),
+            city: userProfile.user.address?.city || '',
+            state: userProfile.user.address?.state || '',
+            pincode: userProfile.user.address?.postalCode || userProfile.user.address?.pincode || ''
           }));
         }
 
@@ -162,7 +168,7 @@ const Checkout = () => {
           country: 'India',
           phone: orderForm.phone
         },
-        paymentMethod: 'cod',
+        paymentMethod: paymentMethod || 'cod',
         notes: orderForm.orderNotes || ''
       };
 
@@ -186,6 +192,56 @@ const Checkout = () => {
         const orderId = result.order?._id;
         const orderNumber = result.order?.orderNumber;
   addToast(`Order placed successfully! ${orderNumber ? `Order No: ${orderNumber}` : ''}`, 'success');
+        // If payment method is not COD, attempt to process payment now
+        if ((orderData.paymentMethod || 'cod') !== 'cod') {
+          try {
+            // show a short payment processing animation
+            setSubmitting(true);
+            const payResp = await fetch(`${API_BASE_URL}/orders/${orderId}/pay`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authService.getToken()}`
+              },
+              body: JSON.stringify({ paymentMethod: orderData.paymentMethod })
+            });
+            const payResult = await payResp.json();
+            if (payResp.ok && payResult.success) {
+              addToast('Payment successful', 'success');
+            } else {
+              addToast(payResult.message || 'Payment failed', 'error');
+            }
+          } catch (e) {
+            console.error('Payment processing error:', e);
+            addToast('Payment failed', 'error');
+          } finally {
+            setSubmitting(false);
+          }
+        }
+
+        // Save shipping address to user profile for future checkouts
+        try {
+          await fetch(`${API_BASE_URL}/users/profile`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${authService.getToken()}`
+            },
+            body: JSON.stringify({
+              phone: orderForm.phone,
+              address: {
+                addressLine1: orderForm.address,
+                city: orderForm.city,
+                state: orderForm.state,
+                postalCode: orderForm.pincode,
+                country: 'India'
+              }
+            })
+          });
+        } catch (e) {
+          console.warn('Failed to save shipping address to profile:', e.message || e);
+        }
+
         navigate('/order-success', { 
           state: { 
             orderId,
@@ -377,25 +433,47 @@ const Checkout = () => {
               {/* Payment Method */}
               <div className="bg-gray-50 p-4 rounded-lg">
                 <h3 className="text-lg font-semibold mb-3">Payment Method</h3>
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id="cod"
-                    name="paymentMethod"
-                    checked={true}
-                    readOnly
-                    className="mr-2"
-                  />
-                  <label htmlFor="cod" className="flex items-center">
-                    <svg className="w-5 h-5 mr-2 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" />
-                    </svg>
-                    Cash on Delivery (COD)
+                <div className="space-y-2">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="card"
+                      checked={paymentMethod === 'card'}
+                      onChange={() => setPaymentMethod('card')}
+                      className="mr-3"
+                    />
+                    <span className="font-medium">Card / NetBanking</span>
                   </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="upi"
+                      checked={paymentMethod === 'upi'}
+                      onChange={() => setPaymentMethod('upi')}
+                      className="mr-3"
+                    />
+                    <span className="font-medium">UPI</span>
+                  </label>
+
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="cod"
+                      checked={paymentMethod === 'cod'}
+                      onChange={() => setPaymentMethod('cod')}
+                      className="mr-3"
+                    />
+                    <span className="font-medium">Cash on Delivery (COD)</span>
+                  </label>
+
+                  <p className="text-sm text-gray-600 mt-2">
+                    For online payments we'll simulate a quick secure payment and mark the order as paid.
+                  </p>
                 </div>
-                <p className="text-sm text-gray-600 mt-2">
-                  Pay when your order is delivered to your doorstep.
-                </p>
               </div>
             </form>
           </div>
@@ -415,11 +493,17 @@ const Checkout = () => {
                   <div key={pid} className="flex items-center space-x-4 p-3 border border-gray-200 rounded-lg">
                     <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
                       {image ? (
-                        <img 
-                          src={`${UPLOADS_BASE}${image}`} 
-                          alt={name}
-                          className="w-14 h-14 object-cover rounded-md"
-                        />
+                        (() => {
+                          // image may be an absolute URL (Cloudinary), a server-relative path (/images/...), or a relative uploads path
+                          if (/^https?:\/\//i.test(image)) {
+                            return (<img src={image} alt={name} className="w-14 h-14 object-cover rounded-md" />);
+                          }
+                          if (image.startsWith('/images') || image.startsWith('/uploads')) {
+                            return (<img src={image} alt={name} className="w-14 h-14 object-cover rounded-md" />);
+                          }
+                          // otherwise prefix with UPLOADS_BASE
+                          return (<img src={`${UPLOADS_BASE.replace(/\/+$/,'')}/${image.replace(/^\/+/, '')}`} alt={name} className="w-14 h-14 object-cover rounded-md" />);
+                        })()
                       ) : (
                         <svg className="w-8 h-8 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7l9-4 9 4v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />

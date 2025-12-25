@@ -89,16 +89,25 @@ module.exports = { sendContactEmail };
 
 // Transactional emails
 const sendOrderConfirmation = async (userEmail, order) => {
+  const company = process.env.COMPANY_NAME || 'NexusNetwork';
+  const dateStr = new Date().toLocaleString('en-IN');
   const mailOptions = {
     from: process.env.EMAIL_FROM || EMAIL_USER || 'no-reply@nexusnetwork',
     to: userEmail,
     subject: `Order Confirmation - ${order.orderNumber || ''}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width:700px; margin:0 auto;">
-        <h2 style="color:#111">Order Confirmation</h2>
+        <h2 style="color:#111">${company} - Order Confirmation</h2>
+        <p style="color:#6b7280; font-size:12px;">Date: ${dateStr}</p>
         <p>Thank you for your order. Order number: <strong>${order.orderNumber}</strong></p>
         <p>Total: <strong>₹${(order.total||0).toFixed(0)}</strong></p>
-        <p>We will notify you when your order status changes.</p>
+        <div style="margin-top:12px;">
+          <h4 style="margin:6px 0;">Order Summary</h4>
+          <ul style="padding-left:16px; color:#374151">
+            ${(order.items || []).map(it => `<li>${it.productName || it.name} — Qty: ${it.quantity} — ₹${it.subtotal || it.price}</li>`).join('')}
+          </ul>
+        </div>
+        <p style="margin-top:12px;">We will notify you when your order status changes.</p>
       </div>
     `
   };
@@ -107,13 +116,16 @@ const sendOrderConfirmation = async (userEmail, order) => {
 };
 
 const sendOtpEmail = async (userEmail, order, otp) => {
+  const company = process.env.COMPANY_NAME || 'NexusNetwork';
+  const dateStr = new Date().toLocaleString('en-IN');
   const mailOptions = {
     from: process.env.EMAIL_FROM || (EMAIL_USER || 'no-reply@nexusnetwork'),
     to: userEmail,
     subject: `Delivery OTP for Order ${order.orderNumber || ''}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width:700px; margin:0 auto;">
-        <h2 style="color:#111">Your Delivery OTP</h2>
+        <h2 style="color:#111">${company} - Delivery OTP</h2>
+        <p style="color:#6b7280; font-size:12px;">Date: ${dateStr}</p>
         <p>Your one-time delivery code for order <strong>${order.orderNumber}</strong> is:</p>
         <p style="font-size:24px; font-weight:700; letter-spacing:2px;">${otp}</p>
         <p>This code expires in ${process.env.OTP_TTL_SECONDS || 300} seconds.</p>
@@ -127,11 +139,19 @@ const sendOtpEmail = async (userEmail, order, otp) => {
 const { generateReceiptBuffer } = require('../utils/pdfReceipt');
 const sendReceiptEmail = async (userEmail, order) => {
   const pdfBuffer = await generateReceiptBuffer(order);
+  const company = process.env.COMPANY_NAME || 'NexusNetwork';
+  const dateStr = new Date().toLocaleString('en-IN');
   const mailOptions = {
     from: process.env.EMAIL_FROM || (EMAIL_USER || 'no-reply@nexusnetwork'),
     to: userEmail,
     subject: `Payment Receipt - ${order.orderNumber || ''}`,
-    html: `<div style="font-family: Arial, sans-serif;"><p>Please find attached your receipt for order <strong>${order.orderNumber}</strong>.</p></div>`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width:700px; margin:0 auto;">
+        <h2 style="color:#111">${company} - Payment Receipt</h2>
+        <p style="color:#6b7280; font-size:12px;">Date: ${dateStr}</p>
+        <p>Please find attached your receipt for order <strong>${order.orderNumber}</strong>.</p>
+      </div>
+    `,
     attachments: [
       { filename: `${order.orderNumber || 'receipt'}.pdf`, content: pdfBuffer }
     ]
@@ -140,4 +160,25 @@ const sendReceiptEmail = async (userEmail, order) => {
   return info;
 };
 
-module.exports = { sendContactEmail, sendOrderConfirmation, sendOtpEmail, sendReceiptEmail };
+const sendPasswordResetOtp = async (userEmail, otp) => {
+  const company = process.env.COMPANY_NAME || 'NexusNetwork';
+  const dateStr = new Date().toLocaleString('en-IN');
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || (EMAIL_USER || 'no-reply@nexusnetwork'),
+    to: userEmail,
+    subject: `${company} - Password Reset OTP`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width:700px; margin:0 auto;">
+        <h2 style="color:#111">${company} - Password Reset</h2>
+        <p style="color:#6b7280; font-size:12px;">Date: ${dateStr}</p>
+        <p>Your password reset code is:</p>
+        <p style="font-size:24px; font-weight:700; letter-spacing:2px;">${otp}</p>
+        <p>This code expires in ${process.env.OTP_TTL_SECONDS || 300} seconds.</p>
+      </div>
+    `
+  };
+  const info = await transporter.sendMail(mailOptions);
+  return info;
+};
+
+module.exports = { sendContactEmail, sendOrderConfirmation, sendOtpEmail, sendReceiptEmail, sendPasswordResetOtp };

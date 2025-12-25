@@ -68,8 +68,8 @@ const DB_NAME = "NexusNetwork";
 const DB_CLUSTER = process.env.DB_CLUSTER || "nexusnetwork.sz7r7g5";
 const DB_APPNAME = process.env.DB_APPNAME || "NexusNetwork";
 
-// Use provided MONGODB_URI or default to local MongoDB with scheme
-let mongoURI = process.env.MONGODB_URI || "mongodb+srv://omchoksi-user:rehman@cluster0.cesr8.mongodb.net/NexusNetwork?retryWrites=true&w=majority";
+// Use provided MONGODB_URI or default to local MongoDB for development
+let mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/NexusNetwork";
 // If running in production, require a real MONGODB_URI (not localhost)
 const isProd = process.env.NODE_ENV === 'production' || process.env.RENDER === 'true';
 if (isProd) {
@@ -94,7 +94,7 @@ async function connectDB() {
       useUnifiedTopology: true,
       dbName: DB_NAME,
     });
-    console.log("✅ MongoDB Atlas connected");
+    console.log("✅ MongoDB connected");
   } catch (err) {
     console.error("❌ MongoDB Atlas connection error:", err);
     if (isProd) {

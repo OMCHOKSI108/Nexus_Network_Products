@@ -39,6 +39,31 @@ const userService = {
       return { success: false, message: err.message || 'Upload failed' };
     }
   }
+  ,
+  async requestPasswordReset(payload) {
+    try {
+      const res = await fetch(`${API_USERS}/reset-password/request`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: err.message || 'Request failed' };
+    }
+  },
+  async verifyPasswordReset(payload) {
+    try {
+      const res = await fetch(`${API_USERS}/reset-password/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: err.message || 'Verify failed' };
+    }
+  }
 };
 
 export default userService;

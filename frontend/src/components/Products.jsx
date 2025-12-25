@@ -318,6 +318,18 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
+            {/* Sort */}
+            <div className="md:w-48">
+              <select
+                value={filters.sort || ''}
+                onChange={(e) => setFilters(prev => ({ ...prev, sort: e.target.value }))}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">Sort: Recommended</option>
+                <option value="price-asc">Price: Low to High</option>
+                <option value="price-desc">Price: High to Low</option>
+              </select>
+            </div>
             
             {/* Category Filter */}
             <div className="md:w-64">
@@ -361,7 +373,15 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product, idx) => (
+            {(() => {
+              // Apply client-side sorting if requested
+              let list = Array.isArray(products) ? [...products] : [];
+              if (filters.sort === 'price-asc') {
+                list.sort((a, b) => (a.price || 0) - (b.price || 0));
+              } else if (filters.sort === 'price-desc') {
+                list.sort((a, b) => (b.price || 0) - (a.price || 0));
+              }
+              return list.map((product, idx) => (
               <div 
                 key={product._id} 
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
@@ -441,7 +461,8 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
                   </button>
                 </div>
               </div>
-            ))}
+            ));
+            })()}
           </div>
         )}
       </div>

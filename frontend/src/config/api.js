@@ -11,6 +11,8 @@ if (!API_BASE_URL.endsWith('/api')) {
 // Derive uploads base (strip trailing '/api' if present)
 let UPLOADS_BASE = API_BASE_URL;
 if (UPLOADS_BASE.endsWith('/api')) UPLOADS_BASE = UPLOADS_BASE.slice(0, -4);
+// Cloudinary logo URL (set via Vite env VITE_CLOUDINARY_LOGO)
+const CLOUDINARY_LOGO = import.meta.env.VITE_CLOUDINARY_LOGO || '/icon.svg';
 
-export { API_BASE_URL, UPLOADS_BASE };
+export { API_BASE_URL, UPLOADS_BASE, CLOUDINARY_LOGO };
 export default API_BASE_URL;

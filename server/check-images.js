@@ -1,13 +1,15 @@
 const mongoose = require('mongoose');
 const Product = require('./models/Product');
 
-const MONGODB_URI = 'mongodb+srv://artist:Artist@cluster0.vkvlkj0.mongodb.net/?appName=Cluster0';
+// Use env-based MongoDB URI or fallback to localhost for development
+const DB_NAME = process.env.DB_NAME || 'NexusNetwork';
+const MONGODB_URI = process.env.MONGODB_URI || `mongodb://localhost:27017/${DB_NAME}`;
 
 async function checkProducts() {
   try {
-    console.log('🔌 Connecting to MongoDB Atlas...');
-    await mongoose.connect(MONGODB_URI);
-    console.log('✅ Connected to MongoDB Atlas');
+    console.log('🔌 Connecting to MongoDB...');
+    await mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, dbName: DB_NAME });
+    console.log('✅ Connected to MongoDB');
 
     const products = await Product.find({}).select('name imagePath category');
     console.log(`\n📦 Found ${products.length} products\n`);

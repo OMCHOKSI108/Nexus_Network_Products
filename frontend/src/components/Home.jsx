@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { CLOUDINARY_LOGO } from '../config/api';
 import { useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Signup from "./Signup";
@@ -63,6 +64,22 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
     }
   };
 
+  // Build logo source: prefer Cloudinary (and apply size transform), fallback to local
+  const getLogoSrc = () => {
+    if (CLOUDINARY_LOGO) {
+      try {
+        // If Cloudinary URL has an /upload/ segment, inject a size transform
+        if (CLOUDINARY_LOGO.includes('/upload/')) {
+          return CLOUDINARY_LOGO.replace('/upload/', '/upload/c_fill,w_800,h_800/');
+        }
+        return CLOUDINARY_LOGO;
+      } catch (e) {
+        return CLOUDINARY_LOGO;
+      }
+    }
+    return '/img0.png';
+  };
+
   // handleLogout kept previously for header integration; not used here after cleanup
 
   // addToCart removed with dynamic previews
@@ -123,15 +140,12 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
                   </div>
                 </div>
                 <div className="flex justify-center relative">
-                  <div className="bg-white bg-opacity-10 p-8 rounded-2xl backdrop-blur-sm">
-                    <img 
-                      src="/images/products/pressure-gauge-parts/premium/Brass%20parts%20and%20fitting.jpg" 
-                      alt="Premium Brass Parts and Fittings" 
-                      className="rounded-xl shadow-2xl w-full h-auto max-w-md object-cover"
-                      onError={(e) => {
-                        // Fallback to a placeholder if image fails to load
-                        e.target.src = "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=500&h=400&fit=crop&crop=center";
-                      }}
+                  <div className="rounded-2xl z-10 flex items-center justify-center ring-0">
+                    <img
+                      src={getLogoSrc()}
+                      alt="NexusNetwork Logo"
+                      className="w-80 h-80 md:w-[600px] md:h-[600px] object-contain"
+                      onError={(e) => { e.target.style.display = 'none'; }}
                     />
 
                     {/* Right-side brand logo placed in the blank area - visible on md+ screens */}
@@ -146,14 +160,7 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
                   </div>
 
                   {/* Right-side Brand Logo — positioned relative to the hero column */}
-                  <img
-                    src={'/img0.png'}
-                    alt="NexusNetwork Logo"
-                    className={
-                      "hidden md:block absolute right-50 -translate-y-1/2 w-94 h-94 object-contain drop-shadow-xl"
-                    }
-                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                  />
+                  {/* single logo inside card now; removed extra overlay */}
 
                 </div>
               </div>

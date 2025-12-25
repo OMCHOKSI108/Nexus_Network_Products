@@ -1,20 +1,19 @@
 const mongoose = require('mongoose');
 const Product = require('./models/Product');
 
-// MongoDB Atlas connection
-const DB_USER = "paramrk2005";
-const DB_PASS = "EC02pock5bZe8Jdh";
-const DB_NAME = "NexusNetwork";
-const DB_CLUSTER = "nexusnetwork.sz7r7g5";
-const DB_APPNAME = "NexusNetwork";
-
-const MONGODB_URI = `mongodb+srv://${DB_USER}:${DB_PASS}@${DB_CLUSTER}.mongodb.net/${DB_NAME}?retryWrites=true&w=majority&appName=${DB_APPNAME}`;
+// MongoDB connection: prefer MONGODB_URI, otherwise build from env vars or use localhost
+const DB_NAME = process.env.DB_NAME || 'NexusNetwork';
+const MONGODB_URI = process.env.MONGODB_URI || (
+  process.env.DB_USER && process.env.DB_PASS && process.env.DB_CLUSTER
+    ? `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@${process.env.DB_CLUSTER}.mongodb.net/${DB_NAME}?retryWrites=true&w=majority&appName=${process.env.DB_APPNAME || 'NexusNetwork'}`
+    : `mongodb://localhost:27017/${DB_NAME}`
+);
 
 async function fixCableGlandImages() {
   try {
-    console.log('🔌 Connecting to MongoDB Atlas...');
-    await mongoose.connect(MONGODB_URI);
-    console.log('✅ Connected to MongoDB Atlas');
+    console.log('🔌 Connecting to MongoDB...');
+    await mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true, dbName: DB_NAME });
+    console.log('✅ Connected to MongoDB');
 
     // Products that need image path fixes based on actual file extensions
     const imageFixes = [

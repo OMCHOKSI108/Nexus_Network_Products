@@ -143,10 +143,15 @@ router.get("/profile", authenticateToken, async (req, res) => {
 // Update profile (name, phone, address)
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
-    const { name, phone, address } = req.body;
+    const { name, phone, address, company, gstNumber, dob, secondaryPhone, socialLinks } = req.body;
     const user = req.user;
     if (name) user.name = name;
     if (phone) user.phone = phone;
+    if (company) user.company = company;
+    if (gstNumber) user.gstNumber = gstNumber;
+    if (dob) user.dob = new Date(dob);
+    if (secondaryPhone) user.secondaryPhone = secondaryPhone;
+    if (socialLinks) user.socialLinks = socialLinks;
     if (address && typeof address === 'object') {
       user.address = { ...user.address, ...address };
     }
@@ -184,6 +189,52 @@ router.post('/profile-image', authenticateToken, upload.single('image'), async (
   } catch (err) {
     console.error('Upload profile image error:', err);
     return res.status(500).json({ success: false, message: 'Failed to upload image' });
+  }
+});
+
+// Password reset - request OTP
+router.post('/reset-password/request', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const ttl = parseInt(process.env.OTP_TTL_SECONDS || '300', 10);
+    user.resetOtp = otp;
+    user.resetOtpExpires = new Date(Date.now() + ttl * 1000);
+    await user.save();
+    const { sendPasswordResetOtp } = require('../config/email');
+    try {
+      await sendPasswordResetOtp(user.email, otp);
+    } catch (e) {
+      console.warn('Failed sending reset OTP email:', e.message || e);
+    }
+    return res.json({ success: true, message: 'OTP sent if email exists' });
+  } catch (err) {
+    console.error('Reset password request error:', err);
+    return res.status(500).json({ success: false, message: 'Internal error' });
+  }
+});
+
+// Password reset - verify OTP and set new password
+router.post('/reset-password/verify', async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) return res.status(400).json({ success: false, message: 'Email, OTP and newPassword are required' });
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    if (!user.resetOtp || !user.resetOtpExpires) return res.status(400).json({ success: false, message: 'No reset request found' });
+    if (new Date() > new Date(user.resetOtpExpires)) return res.status(400).json({ success: false, message: 'OTP expired' });
+    if (String(user.resetOtp) !== String(otp)) return res.status(400).json({ success: false, message: 'Invalid OTP' });
+    user.password = newPassword;
+    user.resetOtp = undefined;
+    user.resetOtpExpires = undefined;
+    await user.save();
+    return res.json({ success: true, message: 'Password reset successful' });
+  } catch (err) {
+    console.error('Reset password verify error:', err);
+    return res.status(500).json({ success: false, message: 'Internal error' });
   }
 });
 
