@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Product = require('./models/Product');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // Use the same connection as server
 const DB_USER = process.env.DB_USER;
@@ -10,6 +11,9 @@ const DB_CLUSTER = process.env.DB_CLUSTER || "nexusnetwork.sz7r7g5";
 const DB_APPNAME = process.env.DB_APPNAME || "NexusNetwork";
 
 let mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/NexusNetwork";
+if (!process.env.MONGODB_URI) {
+  console.warn('⚠️  MONGODB_URI not set in environment; using fallback. For Atlas use set MONGODB_URI in server/.env or export it before running.');
+}
 // Normalize scheme if user provided a host without scheme
 if (!/^mongodb(?:\+srv)?:\/\//.test(mongoURI)) {
   mongoURI = 'mongodb://' + mongoURI;
