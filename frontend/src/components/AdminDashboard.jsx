@@ -319,7 +319,7 @@ const AdminDashboard = () => {
                       <p className="text-xs text-gray-500">{product.category}</p>
                     </div>
                     <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
-                      {product.stock} left
+                      {product.stockQuantity ?? product.stock ?? 0} left
                     </span>
                   </div>
                 ))}

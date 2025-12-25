@@ -16,6 +16,12 @@ const adminAuth = async (req, res, next) => {
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
 
+    // Ensure JWT secret exists
+    if (!process.env.JWT_SECRET) {
+      console.error('JWT_SECRET is not set in environment');
+      return res.status(500).json({ success: false, message: 'Server misconfiguration' });
+    }
+
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
@@ -49,49 +55,34 @@ const adminAuth = async (req, res, next) => {
     next();
   } catch (error) {
     console.error('Admin auth middleware error:', error);
-    
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Access denied. Invalid admin token.'
-      });
-    }
-    
-    if (error.name === 'TokenExpiredError') {
-      console.log(`🔐 Admin token expired for token issued at: ${new Date(error.expiredAt).toISOString()}`);
-      return res.status(401).json({
-        success: false,
-        message: 'Access denied. Admin token expired. Please login again.'
-      });
+
+    if (error.name === 'JsonWebTokenError' || error.name === 'NotBeforeError') {
+      return res.status(401).json({ success: false, message: 'Access denied. Invalid admin token.' });
     }
 
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error during authentication.'
-    });
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ success: false, message: 'Access denied. Admin token expired. Please login again.' });
+    }
+
+    return res.status(500).json({ success: false, message: 'Internal server error during authentication.' });
   }
 };
 
 // Super admin middleware (for sensitive operations)
 const superAdminAuth = async (req, res, next) => {
+  // Run adminAuth first, then check role
   try {
-    // First check admin auth
-    await adminAuth(req, res, () => {
-      // Check if super admin
-      if (req.admin.role !== 'superadmin') {
-        return res.status(403).json({
-          success: false,
-          message: 'Access denied. Super admin privileges required.'
-        });
-      }
-      next();
-    });
+    await adminAuth(req, res, async () => {});
+    if (!req.admin) {
+      return res.status(401).json({ success: false, message: 'Access denied. Admin authentication required.' });
+    }
+    if (req.admin.role !== 'superadmin') {
+      return res.status(403).json({ success: false, message: 'Access denied. Super admin privileges required.' });
+    }
+    return next();
   } catch (error) {
     console.error('Super admin auth error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Internal server error during super admin authentication.'
-    });
+    return res.status(500).json({ success: false, message: 'Internal server error during super admin authentication.' });
   }
 };
 

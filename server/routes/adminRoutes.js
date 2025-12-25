@@ -65,9 +65,9 @@ router.get('/dashboard/overview', adminAuth, async (req, res) => {
       shippingName: o.shippingAddress?.fullName
     })));
 
-    // Get low stock products (less than 10 items)
-    const lowStockProducts = await Product.find({ stock: { $lt: 10 } })
-      .select('name stock category')
+    // Get low stock products (less than 10 items) — use `stockQuantity` field
+    const lowStockProducts = await Product.find({ stockQuantity: { $lt: 10 } })
+      .select('name stockQuantity category')
       .limit(10);
 
     // Calculate revenue stats
