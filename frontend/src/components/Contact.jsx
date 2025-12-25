@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import authService from "../services/authService";
+import { API_BASE_URL } from '../config/api';
 import { useNotification } from './Notification';
 
 const Contact = () => {
@@ -13,7 +14,6 @@ const Contact = () => {
   // Get user info when component mounts
   useEffect(() => {
     const user = authService.getCurrentUser();
-    console.log('Contact: Current user data:', user); // Debug log
     if (user) {
       setFormData(prev => ({
         ...prev,
@@ -42,7 +42,7 @@ const Contact = () => {
     }
     
     try {
-      const response = await fetch('http://localhost:3004/api/contact', {
+      const response = await fetch(`${API_BASE_URL}/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ const Contact = () => {
             </h3>
             <div className="space-y-4 mb-6">
               <div className="flex items-center">
-                <span className="text-blue-700 mr-3">📍</span>
+                <span className="text-blue-700 mr-3">Address</span>
                 <p className="text-gray-600">Limbayat mahaprabhu nagar , Udhna , Surat city -395010 ,(Guj) India</p>
               </div>
               <div className="flex items-center">
@@ -90,7 +90,7 @@ const Contact = () => {
                 <a href="tel:9316675927" className="text-gray-600 hover:text-blue-700">9316675927</a>
               </div>
               <div className="flex items-center">
-                <span className="text-blue-700 mr-3">✉️</span>
+                <span className="text-blue-700 mr-3">Email</span>
                 <a href="mailto:omchoksi99@gmail.com" className="text-gray-600 hover:text-blue-700">omchoksi99@gmail.com</a>
               </div>
             </div>
@@ -127,10 +127,7 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     placeholder="Enter your email"
-                    className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                    style={{
-                      backgroundColor: formData.email ? '#f8f9fa' : 'white'
-                    }}
+                    className={`w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 ${formData.email ? 'bg-gray-50' : 'bg-white'}`}
                   />
                 </div>
               </div>

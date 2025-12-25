@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminAuthService, adminProductService } from '../services/adminService';
+import { UPLOADS_BASE } from '../config/api';
 import { useNotification } from './Notification';
 
 const AdminProducts = () => {
@@ -253,7 +254,7 @@ const AdminProducts = () => {
                             <div className="flex-shrink-0 h-10 w-10">
                               <img
                                 className="h-10 w-10 rounded-full object-cover"
-                                src={`http://localhost:3001${product.image}`}
+                                src={`${UPLOADS_BASE}${product.image}`}
                                 alt={product.name}
                               />
                             </div>
@@ -272,9 +273,9 @@ const AdminProducts = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          product.stock < 10 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                          (product.stockQuantity ?? product.stock ?? 0) < 10 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
                         }`}>
-                          {product.stock} units
+                          {product.stockQuantity ?? product.stock ?? 0} units
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

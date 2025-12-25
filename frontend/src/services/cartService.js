@@ -16,17 +16,12 @@ const cartService = {
   // Get user's cart
   getCart: async () => {
     try {
-      console.log('Getting cart...');
-      console.log('Auth token present:', getAuthToken() ? true : false);
-      
       const response = await axios.get(`${API_URL}/cart`, {
         headers: createAuthHeader()
       });
-      
-      console.log('Cart response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Get cart error:', error.response?.data || error);
+      console.error('Get cart error:', error.response?.data || error);
       throw error.response?.data || { success: false, message: 'Failed to get cart' };
     }
   },
@@ -34,20 +29,15 @@ const cartService = {
   // Add item to cart
   addToCart: async (productId, quantity = 1) => {
     try {
-      console.log('Adding to cart:', { productId, quantity });
-      console.log('Auth token present:', getAuthToken() ? true : false);
-      
       const response = await axios.post(`${API_URL}/cart/add`, {
         productId,
         quantity
       }, {
         headers: createAuthHeader()
       });
-      
-      console.log('Add to cart response:', response.data);
       return response.data;
     } catch (error) {
-      console.error('❌ Add to cart error:', error.response?.data || error);
+      console.error('Add to cart error:', error.response?.data || error);
       throw error.response?.data || { success: false, message: 'Failed to add item to cart' };
     }
   },

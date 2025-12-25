@@ -59,7 +59,6 @@ class AdminAuthService {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const currentTime = Date.now() / 1000;
       if (payload.exp < currentTime) {
-        console.log('Token expired, removing...');
         this.removeToken();
         return false;
       }

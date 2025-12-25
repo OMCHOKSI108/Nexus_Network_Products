@@ -177,7 +177,6 @@ const Checkout = () => {
       });
 
       const result = await response.json();
-      console.log('Order create response:', result);
 
   if (response.ok && result.success) {
         // Clear cart after successful order

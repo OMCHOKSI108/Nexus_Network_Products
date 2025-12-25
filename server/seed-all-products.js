@@ -820,28 +820,46 @@ const products = [
 
 async function seedProducts() {
   try {
-    console.log('🔄 Clearing existing products...');
-    await Product.deleteMany({});
-    
-    console.log('📦 Adding new products...');
-    const createdProducts = await Product.insertMany(products);
-    
-    console.log(`✅ Successfully created ${createdProducts.length} products!`);
-    
-    // Display summary by category
-    const categories = {};
-    createdProducts.forEach(product => {
-      categories[product.category] = (categories[product.category] || 0) + 1;
-    });
-    
-    console.log('\n📊 Products by category:');
-    Object.entries(categories).forEach(([category, count]) => {
-      console.log(`   ${category}: ${count} products`);
-    });
-    
+    const wipe = process.argv.includes('--wipe') || process.argv.includes('-w');
+
+    if (wipe) {
+      console.log('Wipe flag detected — clearing existing products and inserting fresh dataset.');
+      await Product.deleteMany({});
+      const createdProducts = await Product.insertMany(products);
+      console.log(`Inserted ${createdProducts.length} products (wipe mode).`);
+
+      const categories = {};
+      createdProducts.forEach(product => {
+        categories[product.category] = (categories[product.category] || 0) + 1;
+      });
+
+      console.log('\nProducts by category:');
+      Object.entries(categories).forEach(([category, count]) => {
+        console.log(`  ${category}: ${count}`);
+      });
+
+      process.exit(0);
+    }
+
+    // Default behavior: upsert each product by `name` + `category` to avoid destructive wipes
+    console.log('Seeding products in upsert mode (safe). Use --wipe to replace all products.');
+    const operations = products.map(p => ({
+      updateOne: {
+        filter: { name: p.name, category: p.category },
+        update: { $set: p },
+        upsert: true
+      }
+    }));
+
+    const result = await Product.bulkWrite(operations, { ordered: false });
+
+    const upserted = result.upsertedCount || 0;
+    const modified = result.modifiedCount || 0;
+    console.log(`Upsert complete — ${upserted} created, ${modified} modified.`);
+
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error seeding products:', error);
+    console.error('Error seeding products:', error);
     process.exit(1);
   }
 }

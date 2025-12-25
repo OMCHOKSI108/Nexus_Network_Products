@@ -87,8 +87,6 @@ class AuthService {
         password 
       };
       
-      console.log('Sending registration data:', requestData);
-      
       const response = await fetch(`${API_USERS}/register`, {
         method: 'POST',
         headers: {
@@ -98,7 +96,6 @@ class AuthService {
       });
 
       const data = await response.json();
-      console.log('Registration response:', data);
 
       if (response.ok && data.success) {
         // Store token and user info

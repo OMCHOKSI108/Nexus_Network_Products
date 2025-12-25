@@ -32,35 +32,27 @@ function AppContent() {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        console.log('Checking authentication status...');
         if (authService.isAuthenticated()) {
-          console.log('Token found, getting profile...');
           const profileResult = await authService.getProfile();
           if (profileResult.success) {
             setUser(profileResult.user);
             setIsLoggedIn(true);
-            console.log('User authenticated:', profileResult.user);
           } else {
             // Token is invalid, clear it
-            console.log('Invalid token, clearing...');
             authService.removeToken();
           }
-        } else {
-          console.log('No token found');
         }
       } catch (error) {
         console.error('Auth check error:', error);
         // Clear any invalid tokens
         authService.removeToken();
       } finally {
-        console.log('Auth check complete, setting loading to false');
         setLoading(false);
       }
     };
 
     // Add timeout to prevent hanging
     const timeoutId = setTimeout(() => {
-      console.log('Auth check timeout, forcing loading to false');
       setLoading(false);
     }, 5000);
 
@@ -78,7 +70,7 @@ function AppContent() {
         setUser(loginData.user);
         setIsLoggedIn(true);
         setShowLogin(false);
-        console.log("✅ User logged in successfully:", loginData.user);
+        
         // Redirect to home page after successful login
         navigate('/');
         return;
@@ -122,7 +114,7 @@ function AppContent() {
         setUser(signupData.user);
         setIsLoggedIn(true);
         setShowLogin(false);
-        console.log("✅ User registered successfully:", signupData.user);
+        
       }
     } catch (error) {
       console.error('Signup error:', error);

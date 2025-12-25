@@ -38,10 +38,7 @@ const Cart = ({ isOpen, onClose, user, isLoggedIn, cartUpdateTrigger }) => {
       setLoading(true);
       setError('');
       const result = await cartService.getCart();
-      console.log('📦 Load cart response:', result);
-      
       if (result.success) {
-        console.log('✅ Cart loaded successfully:', result.cart);
         setCart(result.cart);
       }
     } catch (error) {
@@ -54,15 +51,11 @@ const Cart = ({ isOpen, onClose, user, isLoggedIn, cartUpdateTrigger }) => {
 
   const removeItem = async (productId) => {
     // Prevent multiple clicks
-    if (removingItems.has(productId)) {
-      console.log('⏳ Already removing item:', productId);
-      return;
-    }
+    if (removingItems.has(productId)) return;
     
     try {
       setError('');
       setRemovingItems(prev => new Set([...prev, productId]));
-      console.log('🗑️ Removing item:', productId);
       
       // Optimistically update UI first
       const optimisticCart = {
@@ -78,23 +71,16 @@ const Cart = ({ isOpen, onClose, user, isLoggedIn, cartUpdateTrigger }) => {
       optimisticCart.totalAmount = optimisticCart.items.reduce((total, item) => total + item.subtotal, 0);
       
       setCart(optimisticCart);
-      
       const result = await cartService.removeFromCart(productId);
-      console.log('📦 Remove item response:', result);
-      
       if (result.success) {
-        console.log('✅ Item removed successfully, updating with server state');
         setCart(result.cart);
       } else {
-        console.log('❌ Remove failed, reverting optimistic update');
         // Revert optimistic update if server request failed
         loadCart();
       }
     } catch (error) {
       console.error('Remove item error:', error);
-      
       // Revert optimistic update and reload cart
-      console.log('❌ Remove error, reloading cart...');
       loadCart();
       
       if (error.message && !error.message.includes('not found')) {

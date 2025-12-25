@@ -1,0 +1,19 @@
+# Minimal Render service template for Nexus Network backend
+# Copy this file to Render (or use as reference) and set env vars in the Render dashboard.
+
+services:
+  - type: web
+    name: nexusnetwork-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    rootDir: ./server
+    # Do NOT store secrets here. Configure these in Render dashboard under Environment.
+    envVars:
+      - key: MONGODB_URI
+        value: "${MONGODB_URI}"
+      - key: JWT_SECRET
+        value: "${JWT_SECRET}"
+      - key: CORS_ORIGIN
+        value: "${CORS_ORIGIN}"

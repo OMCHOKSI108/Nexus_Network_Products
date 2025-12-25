@@ -28,12 +28,4 @@ const adminUser = {
 // Store in localStorage
 localStorage.setItem('adminToken', freshToken);
 localStorage.setItem('adminUser', JSON.stringify(adminUser));
-
-console.log('✅ Admin token has been renewed successfully!');
-console.log('📧 Admin email: kalpeshbhai@gmail.com');
-console.log('👑 Role: superadmin');
-console.log('⏰ Token expires in: 24 hours');
-console.log('🔄 You can now navigate to /admin/dashboard or refresh the page');
-
-// Optionally redirect to admin dashboard
-// window.location.href = '/admin/dashboard';
+// Admin token set — refresh the admin dashboard to use the new token

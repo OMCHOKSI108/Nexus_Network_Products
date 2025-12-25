@@ -26,7 +26,7 @@ const OrderSuccess = () => {
 
           {/* Success Message */}
           <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Order Placed Successfully! 🎉
+            Order Placed Successfully!
           </h1>
           
           <p className="text-gray-600 mb-6">

@@ -93,8 +93,8 @@ const AdminDashboard = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-red-600 text-xl mb-4">⚠️ {error}</div>
+          <div className="text-center">
+          <div className="text-red-600 text-xl mb-4">Error: {error}</div>
           <button
             onClick={fetchDashboardData}
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
@@ -282,7 +282,7 @@ const AdminDashboard = () => {
                             </div>
                             <div className="text-xs text-gray-500">{order.user?.email || 'N/A'}</div>
                             {order.shippingAddress?.phone && (
-                              <div className="text-xs text-gray-400">📞 {order.shippingAddress.phone}</div>
+                              <div className="text-xs text-gray-400">Phone: {order.shippingAddress.phone}</div>
                             )}
                           </div>
                         </td>
