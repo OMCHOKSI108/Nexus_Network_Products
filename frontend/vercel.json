@@ -15,8 +15,11 @@
       "dest": "/assets/$1"
     },
     {
-      "src": "/images/products/(.*)",
-      "dest": "/products/$1"
+      "src": "/images/(.*)",
+      "dest": "/products/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000"
+      }
     },
     {
       "src": "/(.*)",
