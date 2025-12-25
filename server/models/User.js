@@ -15,6 +15,19 @@ const userSchema = new mongoose.Schema(
         message: props => `Username '${props.value}' is invalid. Only letters, spaces, and basic punctuation are allowed, minimum 2 characters.`
       }
     },
+    // Friendly display name (optional, used by frontend)
+    name: { type: String, trim: true },
+    profileImage: { type: String, default: '' },
+    phone: { type: String, trim: true, default: '' },
+    address: {
+      fullName: { type: String, trim: true, default: '' },
+      addressLine: { type: String, trim: true, default: '' },
+      city: { type: String, trim: true, default: '' },
+      state: { type: String, trim: true, default: '' },
+      postalCode: { type: String, trim: true, default: '' },
+      country: { type: String, trim: true, default: '' },
+      phone: { type: String, trim: true, default: '' }
+    },
     email: {
       type: String,
       required: true,
@@ -69,5 +82,10 @@ userSchema.methods.toJSON = function() {
   delete obj.password;
   return obj;
 };
+
+// Keep backward compatibility: expose `name` fallback to `username` when needed
+userSchema.virtual('displayName').get(function() {
+  return this.name || this.username;
+});
 
 module.exports = mongoose.model("User", userSchema);

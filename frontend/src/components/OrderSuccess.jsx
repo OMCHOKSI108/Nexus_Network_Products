@@ -117,7 +117,7 @@ const OrderSuccess = () => {
                 support@nexusnetwork.com
               </a>
               {' '}or call{' '}
-              <a href="tel:+919316675927" className="text-blue-600 hover:underline">
+              <a href="tel:+91+919316675927" className="text-blue-600 hover:underline">
                 +91 98765 43210
               </a>
             </p>

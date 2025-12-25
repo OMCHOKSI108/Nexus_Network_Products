@@ -209,6 +209,20 @@ const Navbar = ({ user, isLoggedIn, onLogout, onOpenLogin, onOpenCart, cartUpdat
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white border-t border-gray-200 py-4">
+            <div className="px-4 pb-4 flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <button onClick={onOpenCart} className="relative p-2 text-gray-700 hover:text-blue-700 transition-colors">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.68 4.64a2 2 0 001.82 2.36h9.72a2 2 0 001.82-2.36L17 13" />
+                  </svg>
+                </button>
+                <span className="text-gray-700 font-medium">Cart</span>
+              </div>
+              <div>
+                {/* Mobile close button */}
+                <button onClick={() => setIsMobileMenuOpen(false)} className="text-gray-500 hover:text-gray-700">Close</button>
+              </div>
+            </div>
             <ul className="space-y-4">
               <li>
                 <Link 

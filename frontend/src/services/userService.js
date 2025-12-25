@@ -21,6 +21,24 @@ const userService = {
       return { success: false, message: err.message || 'Failed to update profile' };
     }
   }
+  ,
+  async uploadProfileImage(file) {
+    try {
+      const token = authService.getToken();
+      const fd = new FormData();
+      fd.append('image', file);
+      const res = await fetch(`${API_USERS}/profile-image`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: fd
+      });
+      return await res.json();
+    } catch (err) {
+      return { success: false, message: err.message || 'Upload failed' };
+    }
+  }
 };
 
 export default userService;

@@ -36,6 +36,20 @@ const Profile = () => {
 
   const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
+  const onFileChange = async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    addToast('Uploading image...', 'info');
+    const res = await userService.uploadProfileImage(file);
+    if (res.success) {
+      addToast('Profile image uploaded', 'success');
+      setForm(prev => ({ ...prev, profileImage: res.profileImage }));
+      setUser(prev => ({ ...prev, profileImage: res.profileImage }));
+    } else {
+      addToast(res.message || 'Upload failed', 'error');
+    }
+  };
+
   const onSave = async (e) => {
     e.preventDefault();
     const res = await userService.updateProfile(form);
@@ -54,6 +68,19 @@ const Profile = () => {
         <h1 className="text-3xl font-bold mb-6">My Profile</h1>
         <div className="bg-white rounded-xl shadow p-6 max-w-2xl">
           <form onSubmit={onSave} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Profile Photo</label>
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
+                  {form.profileImage || user?.profileImage ? (
+                    <img src={form.profileImage || user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-gray-500">No image</span>
+                  )}
+                </div>
+                <input type="file" accept="image/*" onChange={onFileChange} />
+              </div>
+            </div>
             <div>
               <label className="block text-sm font-medium mb-1">Name</label>
               <input name="name" value={form.name} onChange={onChange} className="w-full border rounded px-3 py-2" />

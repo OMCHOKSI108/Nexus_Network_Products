@@ -3,6 +3,9 @@ const router = express.Router();
 const User = require("../models/User");
 const { generateToken } = require("../utils/generateToken");
 const authenticateToken = require("../middleware/auth");
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 // Email and password validators
 const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -123,6 +126,10 @@ router.get("/profile", authenticateToken, async (req, res) => {
       user: {
         id: req.user._id,
         username: req.user.username,
+        name: req.user.name || req.user.username,
+        profileImage: req.user.profileImage || '',
+        phone: req.user.phone || '',
+        address: req.user.address || {},
         email: req.user.email,
         createdAt: req.user.createdAt,
         updatedAt: req.user.updatedAt,
@@ -130,6 +137,53 @@ router.get("/profile", authenticateToken, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+// Update profile (name, phone, address)
+router.put('/profile', authenticateToken, async (req, res) => {
+  try {
+    const { name, phone, address } = req.body;
+    const user = req.user;
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    if (address && typeof address === 'object') {
+      user.address = { ...user.address, ...address };
+    }
+    await user.save();
+    return res.status(200).json({ success: true, user });
+  } catch (err) {
+    console.error('Update profile error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to update profile' });
+  }
+});
+
+// Profile image upload (multipart)
+const uploadDir = path.join(__dirname, '..', 'uploads', 'profiles');
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const name = `${Date.now()}-${Math.random().toString(36).slice(2,8)}${ext}`;
+    cb(null, name);
+  }
+});
+const upload = multer({ storage });
+
+router.post('/profile-image', authenticateToken, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
+    const urlPath = `/uploads/profiles/${req.file.filename}`;
+    // Save to user
+    req.user.profileImage = urlPath;
+    await req.user.save();
+    return res.status(200).json({ success: true, profileImage: urlPath });
+  } catch (err) {
+    console.error('Upload profile image error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to upload image' });
   }
 });
 
