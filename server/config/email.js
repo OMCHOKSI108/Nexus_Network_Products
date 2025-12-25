@@ -1,23 +1,37 @@
 const nodemailer = require('nodemailer');
 
-// Use environment variables when available
-const { EMAIL_USER, EMAIL_PASS, NODE_ENV } = process.env;
+// Support SMTP configuration or fallback to Gmail service using EMAIL_USER/EMAIL_PASS
+const {
+  SMTP_HOST,
+  SMTP_PORT,
+  SMTP_SECURE,
+  EMAIL_USER,
+  EMAIL_PASS,
+  NODE_ENV,
+  EMAIL_ALLOW_SELF_SIGNED
+} = process.env;
 
-// Build transporter options and allow self-signed certs when explicitly enabled
-const transporterOptions = {
-  service: 'gmail',
-  auth: {
-    user: EMAIL_USER || 'omchoksi99@gmail.com',
-    pass: EMAIL_PASS || 'etbyghjnbrgn njfv'
-  }
-};
-
-const allowSelfSigned = process.env.EMAIL_ALLOW_SELF_SIGNED === 'true' || NODE_ENV !== 'production';
-if (allowSelfSigned) {
-  transporterOptions.tls = { rejectUnauthorized: false };
+let transporterOptions = {};
+if (SMTP_HOST) {
+  transporterOptions = {
+    host: SMTP_HOST,
+    port: SMTP_PORT ? parseInt(SMTP_PORT, 10) : 587,
+    secure: SMTP_SECURE === 'true' || SMTP_PORT === '465',
+    auth: EMAIL_USER && EMAIL_PASS ? { user: EMAIL_USER, pass: EMAIL_PASS } : undefined
+  };
+} else {
+  transporterOptions = {
+    service: 'gmail',
+    auth: {
+      user: EMAIL_USER || 'omchoksi99@gmail.com',
+      pass: EMAIL_PASS || ''
+    }
+  };
 }
 
-// Create transporter with Gmail
+const allowSelfSigned = EMAIL_ALLOW_SELF_SIGNED === 'true' || NODE_ENV !== 'production';
+if (allowSelfSigned) transporterOptions.tls = { rejectUnauthorized: false };
+
 const transporter = nodemailer.createTransport(transporterOptions);
 
 // Verify transporter configuration
@@ -34,7 +48,7 @@ const sendContactEmail = async (formData) => {
   const { name, email, subject, message } = formData;
 
   const mailOptions = {
-    from: 'omchoksi99@gmail.com',
+    from: process.env.EMAIL_FROM || EMAIL_USER || 'no-reply@nexusnetwork',
     to: 'omchoksi99@gmail.com',
     replyTo: email,
     subject: `Contact Form: ${subject || 'New Message'}`,
@@ -72,3 +86,58 @@ const sendContactEmail = async (formData) => {
 };
 
 module.exports = { sendContactEmail };
+
+// Transactional emails
+const sendOrderConfirmation = async (userEmail, order) => {
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || EMAIL_USER || 'no-reply@nexusnetwork',
+    to: userEmail,
+    subject: `Order Confirmation - ${order.orderNumber || ''}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width:700px; margin:0 auto;">
+        <h2 style="color:#111">Order Confirmation</h2>
+        <p>Thank you for your order. Order number: <strong>${order.orderNumber}</strong></p>
+        <p>Total: <strong>₹${(order.total||0).toFixed(0)}</strong></p>
+        <p>We will notify you when your order status changes.</p>
+      </div>
+    `
+  };
+  const info = await transporter.sendMail(mailOptions);
+  return info;
+};
+
+const sendOtpEmail = async (userEmail, order, otp) => {
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || (EMAIL_USER || 'no-reply@nexusnetwork'),
+    to: userEmail,
+    subject: `Delivery OTP for Order ${order.orderNumber || ''}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width:700px; margin:0 auto;">
+        <h2 style="color:#111">Your Delivery OTP</h2>
+        <p>Your one-time delivery code for order <strong>${order.orderNumber}</strong> is:</p>
+        <p style="font-size:24px; font-weight:700; letter-spacing:2px;">${otp}</p>
+        <p>This code expires in ${process.env.OTP_TTL_SECONDS || 300} seconds.</p>
+      </div>
+    `
+  };
+  const info = await transporter.sendMail(mailOptions);
+  return info;
+};
+
+const { generateReceiptBuffer } = require('../utils/pdfReceipt');
+const sendReceiptEmail = async (userEmail, order) => {
+  const pdfBuffer = await generateReceiptBuffer(order);
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || (EMAIL_USER || 'no-reply@nexusnetwork'),
+    to: userEmail,
+    subject: `Payment Receipt - ${order.orderNumber || ''}`,
+    html: `<div style="font-family: Arial, sans-serif;"><p>Please find attached your receipt for order <strong>${order.orderNumber}</strong>.</p></div>`,
+    attachments: [
+      { filename: `${order.orderNumber || 'receipt'}.pdf`, content: pdfBuffer }
+    ]
+  };
+  const info = await transporter.sendMail(mailOptions);
+  return info;
+};
+
+module.exports = { sendContactEmail, sendOrderConfirmation, sendOtpEmail, sendReceiptEmail };

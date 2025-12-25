@@ -4,6 +4,10 @@ const Order = require('../models/Order');
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const auth = require('../middleware/auth');
+const { sendReceiptEmail, sendOrderConfirmation } = require('../config/email');
+const { generateReceiptBuffer } = require('../utils/pdfReceipt');
+const path = require('path');
+const fs = require('fs');
 
 // Create new order
 router.post('/', auth, async (req, res) => {
@@ -117,6 +121,15 @@ router.post('/', auth, async (req, res) => {
     const populatedOrder = await Order.findById(savedOrder._id)
       .populate('user', 'username email')
       .populate('items.product', 'name image');
+
+    // Send order confirmation email (best-effort)
+    try {
+      if (populatedOrder.user && populatedOrder.user.email) {
+        await sendOrderConfirmation(populatedOrder.user.email, populatedOrder);
+      }
+    } catch (e) {
+      console.error('Failed to send order confirmation email:', e);
+    }
 
     res.status(201).json({
       success: true,
@@ -258,6 +271,98 @@ router.put('/:orderId/cancel', auth, async (req, res) => {
       message: 'Failed to cancel order',
       error: error.message
     });
+  }
+});
+// Verify OTP for delivery (user submits)
+router.post('/:orderId/verify-otp', auth, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { otp } = req.body;
+    const userId = req.user._id;
+
+    if (!otp) {
+      return res.status(400).json({ success: false, message: 'OTP is required' });
+    }
+
+    const order = await Order.findOne({ _id: orderId, user: userId });
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+
+    if (!order.otp || !order.otpExpires) {
+      return res.status(400).json({ success: false, message: 'No OTP set for this order' });
+    }
+
+    if (new Date() > new Date(order.otpExpires)) {
+      return res.status(400).json({ success: false, message: 'OTP has expired' });
+    }
+
+    if (String(order.otp) !== String(otp)) {
+      return res.status(400).json({ success: false, message: 'Invalid OTP' });
+    }
+
+    order.otpVerified = true;
+    order.otp = undefined;
+    order.otpExpires = undefined;
+    await order.save();
+
+    // If payment already completed, send receipt email
+    try {
+      if (order.paymentStatus === 'paid') {
+        await sendReceiptEmail(req.user.email || req.user.username || req.user, order);
+      }
+    } catch (e) {
+      console.error('Failed to send receipt email after OTP verify:', e);
+    }
+
+    res.json({ success: true, message: 'OTP verified successfully', order });
+  } catch (error) {
+    console.error('Verify OTP error:', error);
+    res.status(500).json({ success: false, message: 'Failed to verify OTP', error: error.message });
+  }
+});
+
+// Simulate payment for an order (mark as paid, generate receipt)
+router.post('/:orderId/pay', auth, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { paymentMethod } = req.body;
+    const userId = req.user._id;
+
+    const order = await Order.findOne({ _id: orderId, user: userId });
+    if (!order) return res.status(404).json({ success: false, message: 'Order not found' });
+
+    // Simulate payment success
+    order.paymentStatus = 'paid';
+    order.paymentMethod = paymentMethod || order.paymentMethod || 'card';
+    await order.save();
+
+    // Generate receipt PDF and save to uploads/receipts
+    try {
+      const pdfBuffer = await generateReceiptBuffer(order);
+      const receiptsDir = path.join(__dirname, '..', 'uploads', 'receipts');
+      if (!fs.existsSync(receiptsDir)) fs.mkdirSync(receiptsDir, { recursive: true });
+      const filename = `${order.orderNumber || order._id}.pdf`;
+      const filePath = path.join(receiptsDir, filename);
+      fs.writeFileSync(filePath, pdfBuffer);
+      const publicUrl = `${req.protocol}://${req.get('host')}/uploads/receipts/${encodeURIComponent(filename)}`;
+      order.paymentReceiptUrl = publicUrl;
+      await order.save();
+
+      // Send receipt email
+      try {
+        if (req.user.email) {
+          await sendReceiptEmail(req.user.email, order);
+        }
+      } catch (e) {
+        console.error('Failed to send receipt email after payment:', e);
+      }
+    } catch (err) {
+      console.error('Failed to generate/save receipt PDF:', err);
+    }
+
+    res.json({ success: true, message: 'Payment simulated and receipt generated', order });
+  } catch (error) {
+    console.error('Simulate payment error:', error);
+    res.status(500).json({ success: false, message: 'Failed to simulate payment', error: error.message });
   }
 });
 

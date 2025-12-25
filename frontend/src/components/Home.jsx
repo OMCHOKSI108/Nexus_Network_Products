@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Signup from "./Signup";
@@ -19,6 +19,37 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
   ];
 
   const imageBasePath = '/images/products/pressure-gauge-parts/premium';
+  const [categoryImages, setCategoryImages] = useState({});
+
+  // Try to get a representative image for each category from the product API (Cloudinary URLs after seeding)
+  useEffect(() => {
+    let mounted = true;
+    const loadForCategories = async () => {
+      try {
+        const mapping = {};
+        for (const cat of featuredCategoryFiles) {
+          try {
+            // Use productService to fetch a product for the category
+            // Lazy import to avoid circular deps
+            const productService = await import('../services/productService');
+            const res = await productService.default.getProducts({ category: cat.name, limit: 1 });
+            if (res && res.success && Array.isArray(res.products) && res.products.length > 0) {
+              mapping[cat.name] = res.products[0].image || `${imageBasePath}/${encodeURIComponent(cat.file)}`;
+            } else {
+              mapping[cat.name] = `${imageBasePath}/${encodeURIComponent(cat.file)}`;
+            }
+          } catch (e) {
+            mapping[cat.name] = `${imageBasePath}/${encodeURIComponent(cat.file)}`;
+          }
+        }
+        if (mounted) setCategoryImages(mapping);
+      } catch (e) {
+        console.warn('Failed loading category images from API, falling back to static assets', e.message);
+      }
+    };
+    loadForCategories();
+    return () => { mounted = false; };
+  }, []);
 
   // Removed dynamic category fetch effect
 
@@ -186,7 +217,7 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
                   >
                     <div className="aspect-video w-full overflow-hidden bg-gray-100">
                       <img
-                        src={`${imageBasePath}/${encodeURIComponent(cat.file)}`}
+                        src={categoryImages[cat.name] || `${imageBasePath}/${encodeURIComponent(cat.file)}`}
                         alt={cat.name}
                         loading="lazy"
                         onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x250?text=Image'; e.currentTarget.onerror = null; }}

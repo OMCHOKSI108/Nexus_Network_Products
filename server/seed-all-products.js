@@ -28,6 +28,19 @@ mongoose.connect(mongoURI, {
   process.exit(1);
 });
 
+// If cloudinary mapping exists, load it to replace local image paths with CDN URLs
+const fs = require('fs');
+let cloudMapping = {};
+try {
+  const mapPath = path.join(__dirname, 'cloudinary-mapping.json');
+  if (fs.existsSync(mapPath)) {
+    cloudMapping = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
+    console.log('Using Cloudinary mapping for product images');
+  }
+} catch (err) {
+  console.warn('Failed to load cloudinary mapping:', err.message || err);
+}
+
 const products = [
   // Brass Fittings
   {
@@ -35,7 +48,7 @@ const products = [
     description: 'Durable brass cross fitting suitable for plumbing and industrial use.',
     price: 120,
     category: 'brass fitting',
-    image: '/images/products/brass-fitting/brass-fitting-1.jpg',
+    image: cloudMapping['/images/products/brass-fitting/brass-fitting-1.jpg'] || '/images/products/brass-fitting/brass-fitting-1.jpg',
     stockQuantity: 50,
     specifications: {
       material: 'Brass',
@@ -48,7 +61,7 @@ const products = [
     description: '90-degree brass elbow connector with male and female threads for secure pipe connections.',
     price: 95,
     category: 'brass fitting',
-    image: '/images/products/brass-fitting/brass-fitting-2.jpg',
+    image: cloudMapping['/images/products/brass-fitting/brass-fitting-2.jpg'] || '/images/products/brass-fitting/brass-fitting-2.jpg',
     stockQuantity: 75,
     specifications: {
       material: 'Brass',
@@ -821,6 +834,21 @@ const products = [
     }
   }
 ];
+
+// If cloudinary mapping provided, replace product.image local paths with CDN URLs
+if (cloudMapping && Object.keys(cloudMapping).length) {
+  console.log('Applying Cloudinary mapping to product images...');
+  products.forEach(p => {
+    if (!p.image) return;
+    const candidates = [p.image, p.image.replace(/^\/+/, ''), '/' + p.image.replace(/^\/+/, '')];
+    for (const c of candidates) {
+      if (cloudMapping[c]) {
+        p.image = cloudMapping[c];
+        break;
+      }
+    }
+  });
+}
 
 async function seedProducts() {
   try {

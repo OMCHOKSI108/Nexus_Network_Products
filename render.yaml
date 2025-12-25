@@ -17,3 +17,13 @@ services:
         value: "${JWT_SECRET}"
       - key: CORS_ORIGIN
         value: "${CORS_ORIGIN}"
+      - key: EMAIL_USER
+        value: "${EMAIL_USER}"
+      - key: EMAIL_PASS
+        value: "${EMAIL_PASS}"
+      - key: EMAIL_FROM
+        value: "${EMAIL_FROM}"
+      - key: CLOUDINARY_URL
+        value: "${CLOUDINARY_URL}"
+      - key: OTP_TTL_SECONDS
+        value: "300"

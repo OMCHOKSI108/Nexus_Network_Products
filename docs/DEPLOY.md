@@ -10,12 +10,20 @@ Prerequisites
 
 Required environment variables
 
-Backend (Render) -- set these in the Render dashboard for the service:
-- `MONGODB_URI`  (mongodb://... or mongodb+srv://...)
-- `JWT_SECRET`   (strong secret)
-- `CORS_ORIGIN`  (comma-separated allowed origins, include your Vercel domain, e.g. https://your-site.vercel.app)
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `FROM_EMAIL` (only if using email features)
-- (optional) `PORT` (Render sets PORT automatically)
+Backend (Render) -- set these in the Render dashboard for the service (exact names used by the codebase):
+- `MONGODB_URI`  (mongodb+srv://... with credentials and DB name)
+- `JWT_SECRET`   (strong secret used for signing JWTs)
+- `CORS_ORIGIN`  (comma-separated allowed origins, include your frontend domain, e.g. https://your-site.vercel.app)
+- `EMAIL_USER` and `EMAIL_PASS` (SMTP account used by `server/config/email.js`)
+- `EMAIL_FROM` (optional, e.g. no-reply@yourdomain.com) — if unset, `EMAIL_USER` will be used as sender
+- `CLOUDINARY_URL` (recommended) or `CLOUDNAME` + `CLOUDNARIY_API` + `CLOUDNARIY_SECRET` when using Cloudinary for image uploads
+- `OTP_TTL_SECONDS` (optional, default 300) — how long delivery OTPs are valid
+- `NODE_ENV=production` in production
+- `PORT` (Render provides this automatically)
+
+Notes:
+- The code also accepts older ENV names for Cloudinary (`CLOUDNAME`, `CLOUDNARIY_API`, `CLOUDNARIY_SECRET`) but `CLOUDINARY_URL` is simplest to set.
+- Never commit real secrets to the repository. Use Render / Vercel environment settings.
 
 Frontend (Vercel) -- set this in the Vercel project settings:
 - `VITE_API_URL` (e.g. `https://your-backend.onrender.com/api`)

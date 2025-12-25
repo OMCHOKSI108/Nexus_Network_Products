@@ -137,6 +137,19 @@ const orderSchema = new mongoose.Schema({
     trim: true
   },
   estimatedDelivery: Date,
+  deliverySlot: {
+    label: String,
+    start: Date,
+    end: Date,
+    timezone: String
+  },
+  otp: String,
+  otpExpires: Date,
+  otpVerified: {
+    type: Boolean,
+    default: false
+  },
+  paymentReceiptUrl: String,
   deliveredAt: Date,
   cancelledAt: Date,
   cancellationReason: String,

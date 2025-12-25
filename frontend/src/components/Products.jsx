@@ -77,6 +77,10 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
       try {
         const res = await fetch('/images/products/pressure-gauge-parts/premium/manifest.json');
         if (!res.ok) throw new Error('Failed to load image manifest');
+        const ct = res.headers.get('content-type') || '';
+        if (!ct.includes('application/json')) {
+          throw new Error('Manifest not returned as JSON');
+        }
         const data = await res.json();
         setImageManifest(Array.isArray(data) ? data : []);
       } catch (e) {
@@ -108,7 +112,12 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
       const img = product.image;
       // If it's an absolute URL, return as-is
       if (/^https?:\/\//i.test(img)) return img;
-      // If it's a server-relative uploads path (starts with /images), prefix with UPLOADS_BASE
+      // If it's a server-relative uploads path that points to `/images`, return it as-is
+      // so the frontend (dev server or built site) can serve it from its own public folder.
+      if (img.startsWith('/images')) {
+        return img;
+      }
+      // If it's any other server-relative path, prefix with UPLOADS_BASE
       if (img.startsWith('/')) {
         const base = UPLOADS_BASE.replace(/\/+$/,'');
         return `${base}${img}`;

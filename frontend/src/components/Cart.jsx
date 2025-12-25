@@ -19,19 +19,7 @@ const Cart = ({ isOpen, onClose, user, isLoggedIn, cartUpdateTrigger }) => {
   }, [isOpen, isLoggedIn, user, cartUpdateTrigger]);
 
   // Auto-close the cart popup when there are no items after loading
-  useEffect(() => {
-    if (
-      isOpen &&
-      isLoggedIn &&
-      user &&
-      !loading &&
-      cart &&
-      Array.isArray(cart.items) &&
-      cart.items.length === 0
-    ) {
-      onClose();
-    }
-  }, [isOpen, isLoggedIn, user, loading, cart, onClose]);
+  
 
   const loadCart = async () => {
     try {

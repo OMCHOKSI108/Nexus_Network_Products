@@ -20,6 +20,7 @@ import authService from './services/authService';
 import { NotificationProvider, useNotification } from './components/Notification';
 
 function AppContent() {
+  const location = window.location; // simple check; kept minimal to avoid hook changes here
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
@@ -168,16 +169,21 @@ function AppContent() {
     );
   }
 
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+
   return (
       <div>
-        <Navbar 
-        user={user} 
-        isLoggedIn={isLoggedIn} 
-        onLogout={handleLogout} 
-        onOpenLogin={openLoginModal}
-        onOpenCart={openCartModal}
-        cartUpdateTrigger={cartUpdateTrigger}
-      />
+        {/* Hide the public Navbar on admin routes; admin pages include their own header */}
+        {(!pathname.startsWith('/admin')) && (
+          <Navbar 
+            user={user} 
+            isLoggedIn={isLoggedIn} 
+            onLogout={handleLogout} 
+            onOpenLogin={openLoginModal}
+            onOpenCart={openCartModal}
+            cartUpdateTrigger={cartUpdateTrigger}
+          />
+        )}
         <Routes>
           <Route 
             path="/" 

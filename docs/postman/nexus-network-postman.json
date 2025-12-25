@@ -1,0 +1,66 @@
+{
+  "info": {
+    "_postman_id": "nexus-network-products-collection",
+    "name": "Nexus Network API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Order",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/orders", "host": [ "{{base_url}}" ], "path": [ "orders" ] },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shippingAddress\": {\n    \"fullName\": \"Test User\",\n    \"address\": \"123 Main St\",\n    \"city\": \"City\",\n    \"state\": \"State\",\n    \"postalCode\": \"123456\",\n    \"country\": \"India\",\n    \"phone\": \"9999999999\"\n  },\n  \"paymentMethod\": \"cod\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Verify OTP",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/orders/{{orderId}}/verify-otp", "host": [ "{{base_url}}" ], "path": [ "orders", "{{orderId}}", "verify-otp" ] },
+        "body": { "mode": "raw", "raw": "{ \"otp\": \"123456\" }" }
+      }
+    },
+    {
+      "name": "Simulate Payment",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{auth_token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/orders/{{orderId}}/pay", "host": [ "{{base_url}}" ], "path": [ "orders", "{{orderId}}", "pay" ] },
+        "body": { "mode": "raw", "raw": "{ \"paymentMethod\": \"card\" }" }
+      }
+    },
+    {
+      "name": "Admin - Update Order Status",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{admin_token}}" }
+        ],
+        "url": { "raw": "{{base_url}}/admin/orders/{{orderId}}/status", "host": [ "{{base_url}}" ], "path": [ "admin", "orders", "{{orderId}}", "status" ] },
+        "body": { "mode": "raw", "raw": "{ \"status\": \"out_for_delivery\", \"comment\": \"On the way\" }" }
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:5000/api" },
+    { "key": "auth_token", "value": "" },
+    { "key": "admin_token", "value": "" },
+    { "key": "orderId", "value": "" }
+  ]
+}

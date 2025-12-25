@@ -5,8 +5,21 @@ const User = require('../models/User');
 const Order = require('../models/Order');
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
+const { v2: cloudinary } = require('cloudinary');
+// Configure Cloudinary if env provided
+if (process.env.CLOUDINARY_URL) {
+  cloudinary.config({ cloudinary_url: process.env.CLOUDINARY_URL });
+} else if (process.env.CLOUDNARIY_API && process.env.CLOUDNARIY_SECRET && process.env.CLOUDNAME) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDNAME,
+    api_key: process.env.CLOUDNARIY_API,
+    api_secret: process.env.CLOUDNARIY_SECRET
+  });
+}
+const { sendOtpEmail } = require('../config/email');
 
 // Configure multer for image uploads
 const storage = multer.diskStorage({
@@ -215,9 +228,21 @@ router.post('/products', adminAuth, upload.single('image'), async (req, res) => 
       inStock: parseInt(stock) > 0
     };
 
-    // Add image if uploaded
+    // Add image if uploaded: upload to Cloudinary if configured, otherwise use local uploads
     if (req.file) {
-      productData.image = `/uploads/${req.file.filename}`;
+      try {
+        if (cloudinary.config().cloud_name) {
+          const resC = await cloudinary.uploader.upload(req.file.path, { folder: 'nexusnetwork/products', use_filename: true });
+          productData.image = resC.secure_url;
+          // delete local file
+          try { fs.unlinkSync(req.file.path); } catch(e) {}
+        } else {
+          productData.image = `/uploads/${req.file.filename}`;
+        }
+      } catch (err) {
+        console.error('Cloudinary upload failed:', err);
+        productData.image = `/uploads/${req.file.filename}`;
+      }
     }
 
     // Create product
@@ -271,9 +296,20 @@ router.put('/products/:id', adminAuth, upload.single('image'), async (req, res) 
       product.inStock = parseInt(stock) > 0;
     }
 
-    // Update image if uploaded
+    // Update image if uploaded (upload to Cloudinary when available)
     if (req.file) {
-      product.image = `/uploads/${req.file.filename}`;
+      try {
+        if (cloudinary.config().cloud_name) {
+          const resC = await cloudinary.uploader.upload(req.file.path, { folder: 'nexusnetwork/products', use_filename: true });
+          product.image = resC.secure_url;
+          try { fs.unlinkSync(req.file.path); } catch(e) {}
+        } else {
+          product.image = `/uploads/${req.file.filename}`;
+        }
+      } catch (err) {
+        console.error('Cloudinary upload failed:', err);
+        product.image = `/uploads/${req.file.filename}`;
+      }
     }
 
     await product.save();
@@ -450,6 +486,42 @@ router.put('/orders/:id/status', adminAuth, async (req, res) => {
     await order.updateStatus(status, comment, req.admin._id, 'Admin');
 
     console.log(`📝 Order status updated by admin ${req.admin.email}: ${order.orderNumber} -> ${status}`);
+
+    // If marking out for delivery, generate OTP and email to user
+    if (status === 'out_for_delivery') {
+      try {
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const ttl = parseInt(process.env.OTP_TTL_SECONDS || '300', 10) * 1000;
+        // reload order with user
+        const orderWithUser = await Order.findById(id).populate('user', 'email name');
+        if (orderWithUser) {
+          orderWithUser.otp = otp;
+          orderWithUser.otpExpires = new Date(Date.now() + ttl);
+          await orderWithUser.save();
+          // send email
+          if (orderWithUser.user && orderWithUser.user.email) {
+            await sendOtpEmail(orderWithUser.user.email, orderWithUser, otp);
+            console.log(`📨 OTP sent for order ${orderWithUser.orderNumber} to ${orderWithUser.user.email}`);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to generate/send OTP:', err);
+      }
+    }
+
+    // If marking delivered, send receipt email if payment completed
+    if (status === 'delivered') {
+      try {
+        const orderWithUser = await Order.findById(id).populate('user', 'email name');
+        if (orderWithUser && orderWithUser.user && orderWithUser.user.email) {
+          const { sendReceiptEmail } = require('../config/email');
+          await sendReceiptEmail(orderWithUser.user.email, orderWithUser);
+          console.log(`📨 Receipt emailed for order ${orderWithUser.orderNumber} to ${orderWithUser.user.email}`);
+        }
+      } catch (err) {
+        console.error('Failed to send receipt email on delivered status:', err);
+      }
+    }
 
     res.json({
       success: true,
