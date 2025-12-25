@@ -9,7 +9,11 @@ const DB_NAME = "NexusNetwork";
 const DB_CLUSTER = process.env.DB_CLUSTER || "nexusnetwork.sz7r7g5";
 const DB_APPNAME = process.env.DB_APPNAME || "NexusNetwork";
 
-const mongoURI = process.env.MONGODB_URI || "localhost:27017/NexusNetwork";
+let mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/NexusNetwork";
+// Normalize scheme if user provided a host without scheme
+if (!/^mongodb(?:\+srv)?:\/\//.test(mongoURI)) {
+  mongoURI = 'mongodb://' + mongoURI;
+}
 
 async function seedAdmin() {
   try {

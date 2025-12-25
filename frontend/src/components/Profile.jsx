@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import userService from '../services/userService';
 import { useNotification } from './Notification';
@@ -8,10 +9,16 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '' });
   const { addToast } = useNotification();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
+      if (!authService.isAuthenticated()) {
+        addToast('Please login to view your profile', 'error');
+        navigate('/');
+        return;
+      }
       const res = await authService.getProfile();
       if (res.success) {
         setUser(res.user);

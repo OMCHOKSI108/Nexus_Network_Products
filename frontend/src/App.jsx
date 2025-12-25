@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import MyOrders from './components/MyOrders';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -238,6 +239,8 @@ function AppContent() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/orders" element={<MyOrders />} />
         </Routes>
   <Footer />
         
