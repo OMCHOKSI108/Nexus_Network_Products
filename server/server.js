@@ -15,7 +15,7 @@ const contactRoutes = require("./routes/contactRoutes");
 const app = express();
 
 // CORS configuration: support comma-separated allowlist in CORS_ORIGIN
-const rawCors = process.env.CORS_ORIGIN || 'http://localhost:5173' || 'http://localhost:5173'  || 'https://nexus-network-products-bhl9j7oyi-om-choksi-s-projects.vercel.app' || 'https://nexus-network-products.vercel.app';
+const rawCors = process.env.CORS_ORIGIN || 'http://localhost:5173,https://nexus-network-products.vercel.app,https://nexus-network-products-bhl9j7oyi-om-choksi-s-projects.vercel.app';
 const corsAllowlist = rawCors.split(',').map(s => s.trim()).filter(Boolean);
 const corsOptions = {
   origin: function (origin, callback) {
