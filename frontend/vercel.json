@@ -15,7 +15,7 @@
       "dest": "/assets/$1"
     },
     {
-      "src": "/images/(.*)",
+      "src": "/images/products/(.*)",
       "dest": "/products/$1"
     },
     {
