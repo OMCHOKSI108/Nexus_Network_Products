@@ -1,5 +1,36 @@
+/* Import Inter from Google for a modern sans-serif */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
- 
+/* Premium branding variables */
+:root {
+	--nn-navy: #0B1F3A;
+	--nn-steel: #4B7A88;
+	--nn-brass: #C39A2E; /* brass/gold accent */
+	--nn-card: #ffffff;
+}
+
+html, body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; }
+
+/* Frosted modal background blur helper */
+.nn-modal-backdrop {
+	backdrop-filter: blur(6px) saturate(100%);
+	background-color: rgba(2,6,23,0.6); /* dark navy overlay */
+}
+
+.nn-card {
+	background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.95));
+	box-shadow: 0 8px 30px rgba(2,6,23,0.35);
+	border-radius: 14px;
+}
+
+.nn-cta {
+	background: linear-gradient(90deg, #B88622, var(--nn-brass));
+	box-shadow: 0 6px 18px rgba(195,154,46,0.18);
+}
+
+.nn-input:focus { box-shadow: 0 0 0 4px rgba(75,122,136,0.12); }
+

@@ -13,13 +13,32 @@ const contactRoutes = require("./routes/contactRoutes");
 
 const app = express();
 
-// CORS configuration for production
+// CORS configuration: support comma-separated allowlist in CORS_ORIGIN
+const rawCors = process.env.CORS_ORIGIN || 'http://localhost:5173';
+const corsAllowlist = rawCors.split(',').map(s => s.trim()).filter(Boolean);
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+  origin: function (origin, callback) {
+    // allow non-browser or same-origin requests
+    if (!origin) return callback(null, true);
+    if (corsAllowlist.includes('*') || corsAllowlist.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   optionsSuccessStatus: 200
 };
-app.use(cors(corsOptions));
+app.use((req, res, next) => {
+  // Use CORS middleware but provide clearer debug when origin is blocked
+  cors(corsOptions)(req, res, (err) => {
+    if (err) {
+      console.warn('CORS blocked origin:', req.headers.origin);
+      res.status(403).send('CORS policy: This origin is not allowed');
+      return;
+    }
+    next();
+  });
+});
 app.use(express.json());
 
 // Serve static files for uploads
@@ -33,14 +52,18 @@ app.use((req, res, next) => {
 
 
 // Build MongoDB Atlas URI using env variables
-const DB_USER = process.env.DB_USER;
-const DB_PASS = process.env.DB_PASS;
+// const DB_USER = process.env.DB_USER;
+// const DB_PASS = process.env.DB_PASS;
 const DB_NAME = "NexusNetwork";
 const DB_CLUSTER = process.env.DB_CLUSTER || "nexusnetwork.sz7r7g5";
 const DB_APPNAME = process.env.DB_APPNAME || "NexusNetwork";
 
-// const mongoURI = process.env.MONGODB_URI || "localhost:27017/NexusNetwork";
-const mongoURI = process.env.MONGODB_URI || "localhost:27017/NexusNetwork";
+// Use provided MONGODB_URI or default to local MongoDB with scheme
+let mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/NexusNetwork";
+// Ensure the connection string includes a valid scheme
+if (!mongoURI.startsWith("mongodb://") && !mongoURI.startsWith("mongodb+srv://")) {
+  mongoURI = "mongodb://" + mongoURI;
+}
 async function connectDB() {
   try {
     await mongoose.connect(mongoURI, {
@@ -65,6 +88,15 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contact", contactRoutes);
+
+// Basic health endpoints
+app.get('/', (req, res) => {
+  res.status(200).send('API running');
+});
+
+app.get('/api', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Nexus Network API' });
+});
 
 const PORT = process.env.PORT || 3004;
 

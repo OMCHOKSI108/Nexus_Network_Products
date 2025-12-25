@@ -1,12 +1,13 @@
 import authService from './authService';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE_URL = 'http://localhost:3004/api/users';
+const API_USERS = `${API_BASE_URL}/users`;
 
 const userService = {
   async updateProfile(updates) {
     try {
       const token = authService.getToken();
-      const response = await fetch(`${API_BASE_URL}/profile`, {
+      const response = await fetch(`${API_USERS}/profile`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

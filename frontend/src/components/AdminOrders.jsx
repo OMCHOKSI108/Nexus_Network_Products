@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminAuthService, adminOrderService } from '../services/adminService';
+import { UPLOADS_BASE } from '../config/api';
 import { useNotification } from './Notification';
 
 const AdminOrders = () => {
@@ -213,7 +214,7 @@ const AdminOrders = () => {
                           </div>
                           <div className="text-sm text-gray-500">{order.user?.email || 'N/A'}</div>
                           {order.shippingAddress?.phone && (
-                            <div className="text-xs text-gray-400">📞 {order.shippingAddress.phone}</div>
+                            <div className="text-xs text-gray-400"><strong>Phone:</strong> {order.shippingAddress.phone}</div>
                           )}
                         </div>
                       </td>
@@ -374,7 +375,7 @@ const AdminOrders = () => {
                           <td className="px-4 py-3">
                             <div className="flex items-center">
                               {item.productImage && (
-                                <img src={`http://localhost:3004${item.productImage}`} alt={item.productName} className="w-12 h-12 object-cover rounded mr-3" />
+                                <img src={`${UPLOADS_BASE}${item.productImage}`} alt={item.productName} className="w-12 h-12 object-cover rounded mr-3" />
                               )}
                               <div>
                                 <div className="text-sm font-medium text-gray-900">{item.productName}</div>

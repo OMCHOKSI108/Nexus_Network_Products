@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE_URL = 'http://localhost:3004/api/admin';
-const AUTH_API_URL = 'http://localhost:3004/api/admin/auth';
+const API_BASE_URL_ADMIN = `${API_BASE_URL}/admin`;
+const AUTH_API_URL = `${API_BASE_URL}/admin/auth`;
 
 // Get auth token from localStorage
 const getAdminToken = () => {
@@ -188,7 +189,7 @@ class AdminDashboardService {
   // Get dashboard overview
   async getDashboardOverview() {
     try {
-      const response = await axios.get(`${API_BASE_URL}/dashboard/overview`, {
+      const response = await axios.get(`${API_BASE_URL_ADMIN}/dashboard/overview`, {
         headers: createAuthHeader()
       });
       return response.data;
@@ -196,7 +197,7 @@ class AdminDashboardService {
       console.error('Get dashboard overview error:', error);
       
       // Handle token expiration
-      if (error.response?.status === 401 && 
+        if (error.response?.status === 401 && 
           (error.response?.data?.message?.includes('expired') || 
            error.response?.data?.message?.includes('invalid'))) {
         // Token expired, clear auth data and redirect to login
@@ -222,7 +223,7 @@ class AdminProductService {
       if (filters.category) params.append('category', filters.category);
       if (filters.search) params.append('search', filters.search);
 
-      const response = await axios.get(`${API_BASE_URL}/products?${params.toString()}`, {
+      const response = await axios.get(`${API_BASE_URL_ADMIN}/products?${params.toString()}`, {
         headers: createAuthHeader()
       });
       return response.data;
@@ -242,7 +243,7 @@ class AdminProductService {
         }
       });
 
-      const response = await axios.post(`${API_BASE_URL}/products`, formData, {
+      const response = await axios.post(`${API_BASE_URL_ADMIN}/products`, formData, {
         headers: {
           ...createAuthHeader(),
           'Content-Type': 'multipart/form-data'
@@ -265,7 +266,7 @@ class AdminProductService {
         }
       });
 
-      const response = await axios.put(`${API_BASE_URL}/products/${productId}`, formData, {
+      const response = await axios.put(`${API_BASE_URL_ADMIN}/products/${productId}`, formData, {
         headers: {
           ...createAuthHeader(),
           'Content-Type': 'multipart/form-data'
@@ -281,7 +282,7 @@ class AdminProductService {
   // Delete product
   async deleteProduct(productId) {
     try {
-      const response = await axios.delete(`${API_BASE_URL}/products/${productId}`, {
+      const response = await axios.delete(`${API_BASE_URL_ADMIN}/products/${productId}`, {
         headers: createAuthHeader()
       });
       return response.data;
@@ -305,7 +306,7 @@ class AdminOrderService {
       if (filters.paymentStatus) params.append('paymentStatus', filters.paymentStatus);
       if (filters.search) params.append('search', filters.search);
 
-      const response = await axios.get(`${API_BASE_URL}/orders?${params.toString()}`, {
+      const response = await axios.get(`${API_BASE_URL_ADMIN}/orders?${params.toString()}`, {
         headers: createAuthHeader()
       });
       return response.data;
@@ -318,7 +319,7 @@ class AdminOrderService {
   // Get single order
   async getOrder(orderId) {
     try {
-      const response = await axios.get(`${API_BASE_URL}/orders/${orderId}`, {
+      const response = await axios.get(`${API_BASE_URL_ADMIN}/orders/${orderId}`, {
         headers: createAuthHeader()
       });
       return response.data;
@@ -331,7 +332,7 @@ class AdminOrderService {
   // Update order status
   async updateOrderStatus(orderId, status, comment = '') {
     try {
-      const response = await axios.put(`${API_BASE_URL}/orders/${orderId}/status`, {
+      const response = await axios.put(`${API_BASE_URL_ADMIN}/orders/${orderId}/status`, {
         status,
         comment
       }, {
@@ -356,7 +357,7 @@ class AdminUserService {
       
       if (search) params.append('search', search);
 
-      const response = await axios.get(`${API_BASE_URL}/users?${params.toString()}`, {
+      const response = await axios.get(`${API_BASE_URL_ADMIN}/users?${params.toString()}`, {
         headers: createAuthHeader()
       });
       return response.data;

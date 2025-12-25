@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import cartService from '../services/cartService';
 import authService from '../services/authService';
+import { API_BASE_URL, UPLOADS_BASE } from '../config/api';
 import { useNotification } from './Notification';
 
 const Checkout = () => {
@@ -166,7 +167,7 @@ const Checkout = () => {
       };
 
       // Place order via API
-      const response = await fetch('http://localhost:3004/api/orders', {
+      const response = await fetch(`${API_BASE_URL}/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -176,7 +177,7 @@ const Checkout = () => {
       });
 
       const result = await response.json();
-      console.log('🧾 Order create response:', result);
+      console.log('Order create response:', result);
 
   if (response.ok && result.success) {
         // Clear cart after successful order
@@ -416,12 +417,15 @@ const Checkout = () => {
                     <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
                       {image ? (
                         <img 
-                          src={`http://localhost:3004${image}`} 
+                          src={`${UPLOADS_BASE}${image}`} 
                           alt={name}
                           className="w-14 h-14 object-cover rounded-md"
                         />
                       ) : (
-                        <span className="text-2xl text-gray-400">📦</span>
+                        <svg className="w-8 h-8 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7l9-4 9 4v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7l9 4 9-4" />
+                        </svg>
                       )}
                     </div>
                     <div className="flex-1">
@@ -478,7 +482,7 @@ const Checkout = () => {
             </button>
 
             <div className="mt-4 text-center text-sm text-gray-600">
-              <p>🔒 Your order is secure and protected</p>
+              <p>Your order is secure and protected</p>
             </div>
           </div>
         </div>

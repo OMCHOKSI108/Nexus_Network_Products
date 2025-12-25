@@ -1,12 +1,13 @@
 import authService from './authService';
+import { API_BASE_URL } from '../config/api';
 
-const API_BASE_URL = 'http://localhost:3004/api/orders';
+const API_ORDERS = `${API_BASE_URL}/orders`;
 
 const orderService = {
   async getMyOrders(page = 1, limit = 10) {
     try {
       const token = authService.getToken();
-      const url = `${API_BASE_URL}/user?page=${page}&limit=${limit}`;
+      const url = `${API_ORDERS}/user?page=${page}&limit=${limit}`;
       const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,

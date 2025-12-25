@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
-const API_URL = 'http://localhost:3004/api';
+const API_URL = API_BASE_URL;
 
 const productService = {
   // Get all products with optional filters

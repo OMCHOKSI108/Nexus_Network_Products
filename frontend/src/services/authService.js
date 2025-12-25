@@ -1,5 +1,6 @@
 // Authentication service for handling JWT tokens and API calls
-const API_BASE_URL = 'http://localhost:3004/api/users';
+import { API_BASE_URL } from '../config/api';
+const API_USERS = `${API_BASE_URL}/users`;
 
 class AuthService {
   // Get token from localStorage
@@ -42,7 +43,7 @@ class AuthService {
   // Login user
   async login(email, password) {
     try {
-      const response = await fetch(`${API_BASE_URL}/login`, {
+      const response = await fetch(`${API_USERS}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,9 +87,9 @@ class AuthService {
         password 
       };
       
-      console.log('📤 Sending registration data:', requestData);
+      console.log('Sending registration data:', requestData);
       
-      const response = await fetch(`${API_BASE_URL}/register`, {
+      const response = await fetch(`${API_USERS}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -97,7 +98,7 @@ class AuthService {
       });
 
       const data = await response.json();
-      console.log('📥 Registration response:', data);
+      console.log('Registration response:', data);
 
       if (response.ok && data.success) {
         // Store token and user info
@@ -129,7 +130,7 @@ class AuthService {
       const token = this.getToken();
       if (token) {
         // Optional: Call logout endpoint to blacklist token
-        await fetch(`${API_BASE_URL}/logout`, {
+        await fetch(`${API_USERS}/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -153,7 +154,7 @@ class AuthService {
         throw new Error('No token available');
       }
 
-      const response = await fetch(`${API_BASE_URL}/profile`, {
+      const response = await fetch(`${API_USERS}/profile`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

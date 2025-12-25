@@ -46,6 +46,7 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
           onCloseLogin();
           setShowSignup(true);
         }}
+        open={showLogin}
       />
     </div>
   );
@@ -59,6 +60,7 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
           setShowSignup(false);
           onOpenLogin();
         }}
+        open={showSignup}
       />
     </div>
   );

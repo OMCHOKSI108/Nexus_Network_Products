@@ -83,15 +83,15 @@ const Contact = () => {
             <div className="space-y-4 mb-6">
               <div className="flex items-center">
                 <span className="text-blue-700 mr-3">📍</span>
-                <p className="text-gray-600">Shed No. C2/109, GIDC, Shanker Tekri, Jamnagar - 361 004, (Guj) India</p>
+                <p className="text-gray-600">Limbayat mahaprabhu nagar , Udhna , Surat city -395010 ,(Guj) India</p>
               </div>
               <div className="flex items-center">
                 <span className="text-blue-700 mr-3">📞</span>
-                <a href="tel:9427284945" className="text-gray-600 hover:text-blue-700">9427284945</a>
+                <a href="tel:9316675927" className="text-gray-600 hover:text-blue-700">9316675927</a>
               </div>
               <div className="flex items-center">
                 <span className="text-blue-700 mr-3">✉️</span>
-                <a href="mailto:pambhar_k@yahoo.in" className="text-gray-600 hover:text-blue-700">pambhar_k@yahoo.in</a>
+                <a href="mailto:omchoksi99@gmail.com" className="text-gray-600 hover:text-blue-700">omchoksi99@gmail.com</a>
               </div>
             </div>
           </div>

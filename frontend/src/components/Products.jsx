@@ -185,6 +185,7 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
           onCloseLogin();
           setShowSignup(true);
         }}
+        open={showLogin}
       />
     </div>
   );
@@ -198,6 +199,7 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
           setShowSignup(false);
           if (onOpenLogin) onOpenLogin();
         }}
+        open={showSignup}
       />
     </div>
   );

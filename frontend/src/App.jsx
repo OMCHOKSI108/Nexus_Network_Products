@@ -31,35 +31,35 @@ function AppContent() {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
-        console.log('🔍 Checking authentication status...');
+        console.log('Checking authentication status...');
         if (authService.isAuthenticated()) {
-          console.log('🔑 Token found, getting profile...');
+          console.log('Token found, getting profile...');
           const profileResult = await authService.getProfile();
           if (profileResult.success) {
             setUser(profileResult.user);
             setIsLoggedIn(true);
-            console.log('✅ User authenticated:', profileResult.user);
+            console.log('User authenticated:', profileResult.user);
           } else {
             // Token is invalid, clear it
-            console.log('❌ Invalid token, clearing...');
+            console.log('Invalid token, clearing...');
             authService.removeToken();
           }
         } else {
-          console.log('🚫 No token found');
+          console.log('No token found');
         }
       } catch (error) {
-        console.error('❌ Auth check error:', error);
+        console.error('Auth check error:', error);
         // Clear any invalid tokens
         authService.removeToken();
       } finally {
-        console.log('✅ Auth check complete, setting loading to false');
+        console.log('Auth check complete, setting loading to false');
         setLoading(false);
       }
     };
 
     // Add timeout to prevent hanging
     const timeoutId = setTimeout(() => {
-      console.log('⏰ Auth check timeout, forcing loading to false');
+      console.log('Auth check timeout, forcing loading to false');
       setLoading(false);
     }, 5000);
 

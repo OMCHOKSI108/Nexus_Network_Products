@@ -77,7 +77,7 @@ const Footer = () => {
               </div>
               <div>
                 <h5 className="text-white font-medium">Address</h5>
-                <p className="text-gray-400 text-sm">Shed No. C2/109, GIDC, Shanker Tekri, Jamnagar - 361 004, (Guj) India</p>
+                <p className="text-gray-400 text-sm">Limbayat mahaprabhu nagar , Udhna , Surat city -395010 ,(Guj) India</p>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -88,7 +88,7 @@ const Footer = () => {
               </div>
               <div>
                 <h5 className="text-white font-medium">Phone</h5>
-                <a href="tel:9427284945" className="text-gray-400 text-sm hover:text-white">9427284945</a>
+                <a href="tel:9316675927" className="text-gray-400 text-sm hover:text-white">9316675927</a>
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -99,7 +99,7 @@ const Footer = () => {
               </div>
               <div>
                 <h5 className="text-white font-medium">Email</h5>
-                <p className="text-gray-400 text-sm">pambhar_k@yahoo.in</p>
+                <p className="text-gray-400 text-sm">omchoksi99@gmail.com</p>
               </div>
             </div>
           </div>

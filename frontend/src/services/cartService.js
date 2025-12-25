@@ -1,11 +1,10 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config/api';
 
-const API_URL = 'http://localhost:3004/api';
+const API_URL = API_BASE_URL;
 
 // Get auth token from localStorage
-const getAuthToken = () => {
-  return localStorage.getItem('token');
-};
+const getAuthToken = () => localStorage.getItem('token');
 
 // Create axios instance with auth header
 const createAuthHeader = () => {
@@ -17,14 +16,14 @@ const cartService = {
   // Get user's cart
   getCart: async () => {
     try {
-      console.log('📦 Getting cart...');
-      console.log('🔑 Auth token:', getAuthToken() ? 'EXISTS' : 'MISSING');
+      console.log('Getting cart...');
+      console.log('Auth token present:', getAuthToken() ? true : false);
       
       const response = await axios.get(`${API_URL}/cart`, {
         headers: createAuthHeader()
       });
       
-      console.log('📦 Cart response:', response.data);
+      console.log('Cart response:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Get cart error:', error.response?.data || error);
@@ -35,8 +34,8 @@ const cartService = {
   // Add item to cart
   addToCart: async (productId, quantity = 1) => {
     try {
-      console.log('🛒 Adding to cart:', { productId, quantity });
-      console.log('🔑 Auth token:', getAuthToken() ? 'EXISTS' : 'MISSING');
+      console.log('Adding to cart:', { productId, quantity });
+      console.log('Auth token present:', getAuthToken() ? true : false);
       
       const response = await axios.post(`${API_URL}/cart/add`, {
         productId,
@@ -45,7 +44,7 @@ const cartService = {
         headers: createAuthHeader()
       });
       
-      console.log('✅ Add to cart response:', response.data);
+      console.log('Add to cart response:', response.data);
       return response.data;
     } catch (error) {
       console.error('❌ Add to cart error:', error.response?.data || error);

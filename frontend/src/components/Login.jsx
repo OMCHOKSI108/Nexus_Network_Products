@@ -1,307 +1,116 @@
-import { useState } from "react";
-import authService from "../services/authService";
+import { useState, useRef } from 'react';
+import authService from '../services/authService';
+import { FaLock, FaEnvelope } from 'react-icons/fa';
 
-export default function Login({ onLoginSuccess, onClose, onSwitchToSignup }) {
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [message, setMessage] = useState("");
+export default function Login({ onLoginSuccess, onClose, onSwitchToSignup, open }) {
+  const [form, setForm] = useState({ email: '', password: '' });
+  const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const emailRef = useRef(null);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Prevent double submission
-    if (isLoading) {
-      console.log("⚠️ Already submitting, ignoring duplicate request");
-      return;
-    }
-    
+    if (isLoading) return;
     setIsLoading(true);
-    setMessage("Logging in...");
-    
+    setMessage('');
     try {
       const result = await authService.login(form.email, form.password);
-      console.log("✅ Login response:", result);
-      
       if (result.success) {
-        setMessage("✅ Login successful!");
-        setForm({ email: "", password: "" });
-
-        // Call success callback to update parent state and redirect
-        if (onLoginSuccess) {
-          setTimeout(() => {
-            onLoginSuccess({
-              user: result.user,
-              token: result.token
-            });
-            onClose && onClose(); // Close modal/form
-          }, 1500); // Show success message briefly before redirecting
-        }
+        setMessage('Login successful');
+        setForm({ email: '', password: '' });
+        if (onLoginSuccess) onLoginSuccess({ user: result.user, token: result.token });
+        onClose && onClose();
       } else {
-        setMessage("❌ " + result.message);
+        setMessage(result.message || 'Login failed');
+        // focus email for quick retry
+        emailRef.current?.focus();
       }
     } catch (err) {
-      console.error("❌ Login error:", err);
-      setMessage("❌ Error logging in");
+      console.error('Login error:', err);
+      setMessage('Error logging in');
+      emailRef.current?.focus();
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      minHeight: "100vh",
-      backgroundColor: "#f8fafc",
-      padding: "20px"
-    }}>
-      <div style={{
-        backgroundColor: "#ffffff",
-        padding: "40px",
-        borderRadius: "16px",
-        boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
-        width: "100%",
-        maxWidth: "400px",
-        textAlign: "center",
-        border: "1px solid #e2e8f0",
-        position: "relative"
-      }}>
-        {/* Close Button */}
-        {onClose && (
-          <button
-            onClick={onClose}
-            style={{
-              position: "absolute",
-              top: "15px",
-              right: "15px",
-              background: "none",
-              border: "none",
-              fontSize: "24px",
-              color: "#9ca3af",
-              cursor: "pointer",
-              width: "30px",
-              height: "30px",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              transition: "all 0.2s ease"
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#f3f4f6";
-              e.target.style.color = "#374151";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "transparent";
-              e.target.style.color = "#9ca3af";
-            }}
-          >
-            ×
-          </button>
-        )}
-        <div style={{ marginBottom: "30px" }}>
-          <h2 style={{ 
-            color: "#1a202c", 
-            marginBottom: "8px", 
-            fontSize: "28px",
-            fontWeight: "700"
-          }}>
-            Welcome Back
-          </h2>
-          <p style={{ 
-            color: "#64748b", 
-            fontSize: "16px",
-            margin: "0"
-          }}>
-            Sign in to your account
-          </p>
-        </div>
+    <div className={`fixed inset-0 z-50 flex items-center justify-center ${open ? '' : 'pointer-events-none'}`} aria-hidden={!open}>
+      <div className="absolute inset-0 nn-modal-backdrop transition-opacity" />
+      <div className="relative w-full max-w-xl mx-4 nn-card overflow-hidden transform transition-all duration-300 scale-100">
+        <div className="grid grid-cols-12">
+          <div className="col-span-7 p-8">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900">Sign in to NexusNetwork</h3>
+                <p className="text-sm text-gray-500 mt-1">Enterprise account access — Premium Brass Parts</p>
+              </div>
+              <div>
+                <button onClick={onClose} aria-label="Close" className="text-gray-400 hover:text-gray-600 ml-4">×</button>
+              </div>
+            </div>
 
-        <form onSubmit={handleSubmit} style={{ marginBottom: "24px" }}>
-          <div style={{ marginBottom: "20px", textAlign: "left" }}>
-            <label style={{ 
-              display: "block", 
-              marginBottom: "8px", 
-              fontSize: "14px", 
-              fontWeight: "600",
-              color: "#374151"
-            }}>
-              Email Address
-            </label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={form.email}
-              onChange={handleChange}
-              required
-              style={{
-                ...inputStyle,
-                fontSize: "16px"
-              }}
-            />
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4" aria-label="Login form">
+              <label className="block">
+                <span className="text-sm text-gray-700">Email</span>
+                <div className="relative mt-2">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400"><FaEnvelope /></span>
+                  <input
+                    ref={emailRef}
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="name@company.com"
+                    className="nn-input pl-10 pr-3 py-3 w-full border rounded-lg focus:outline-none"
+                  />
+                </div>
+              </label>
+
+              <label className="block">
+                <span className="text-sm text-gray-700">Password</span>
+                <div className="relative mt-2">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400"><FaLock /></span>
+                  <input
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    autoComplete="current-password"
+                    value={form.password}
+                    onChange={handleChange}
+                    placeholder="Your password"
+                    className="nn-input pl-10 pr-12 py-3 w-full border rounded-lg focus:outline-none"
+                  />
+                  <button type="button" onClick={() => setShowPassword(s => !s)} className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm text-gray-500">{showPassword ? 'Hide' : 'Show'}</button>
+                </div>
+              </label>
+
+              <div className="flex items-center justify-between">
+                <div className="text-sm text-gray-600">&nbsp;</div>
+                <button type="submit" disabled={isLoading} className={`nn-cta text-white font-semibold px-6 py-2 rounded-md transition transform ${isLoading ? 'opacity-60 pointer-events-none' : 'hover:brightness-105'}`}>
+                  {isLoading ? 'Signing in…' : 'Sign In'}
+                </button>
+              </div>
+            </form>
+
+            {message && (
+              <div className={`mt-4 p-3 rounded-md text-sm ${message.toLowerCase().includes('success') ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>{message}</div>
+            )}
           </div>
 
-          <div style={{ marginBottom: "24px", textAlign: "left" }}>
-            <label style={{ 
-              display: "block", 
-              marginBottom: "8px", 
-              fontSize: "14px", 
-              fontWeight: "600",
-              color: "#374151"
-            }}>
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              value={form.password}
-              onChange={handleChange}
-              required
-              style={{
-                ...inputStyle,
-                fontSize: "16px"
-              }}
-            />
+          <div className="col-span-5 p-8 bg-gradient-to-b from-transparent to-white/40 flex flex-col justify-center">
+            <div className="text-sm text-gray-700">New to NexusNetwork?</div>
+            <h4 className="mt-2 text-lg font-semibold text-gray-900">Create an enterprise account</h4>
+            <p className="mt-2 text-sm text-gray-500">Secure, audited access for your procurement and operations teams.</p>
+            <button onClick={() => { onSwitchToSignup && onSwitchToSignup(); }} className="mt-6 border border-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-50">Create Account</button>
           </div>
-
-          <button 
-            type="submit" 
-            disabled={isLoading}
-            style={{
-              ...buttonStyle,
-              opacity: isLoading ? 0.7 : 1,
-              cursor: isLoading ? 'not-allowed' : 'pointer',
-              fontSize: "16px",
-              fontWeight: "600",
-              transform: isLoading ? 'none' : 'translateY(0)',
-              transition: "all 0.2s ease"
-            }}
-            onMouseEnter={(e) => {
-              if (!isLoading) {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 8px 20px rgba(59, 130, 246, 0.4)';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isLoading) {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 4px 12px rgba(59, 130, 246, 0.2)';
-              }
-            }}
-          >
-            {isLoading ? (
-              <span style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ 
-                  display: "inline-block", 
-                  width: "20px", 
-                  height: "20px", 
-                  border: "2px solid #ffffff", 
-                  borderTop: "2px solid transparent", 
-                  borderRadius: "50%", 
-                  animation: "spin 1s linear infinite",
-                  marginRight: "8px"
-                }}></span>
-                Signing In...
-              </span>
-            ) : "Sign In"}
-          </button>
-        </form>
-
-        {message && (
-          <div style={{ 
-            marginBottom: "20px",
-            padding: "12px",
-            borderRadius: "8px",
-            fontSize: "14px",
-            fontWeight: "500",
-            backgroundColor: message.includes("✅") ? "#f0f9ff" : "#fef2f2",
-            color: message.includes("✅") ? "#0369a1" : "#dc2626",
-            border: `1px solid ${message.includes("✅") ? "#bae6fd" : "#fecaca"}`
-          }}>
-            {message}
-          </div>
-        )}
-
-        <div style={{ 
-          paddingTop: "20px", 
-          borderTop: "1px solid #e2e8f0",
-          fontSize: "14px"
-        }}>
-          <p style={{ 
-            color: "#64748b", 
-            margin: "0 0 12px 0"
-          }}>
-            Don't have an account?
-          </p>
-          <button 
-            onClick={() => {
-              onClose && onClose();
-              onSwitchToSignup && onSwitchToSignup();
-            }}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#3b82f6",
-              fontSize: "14px",
-              fontWeight: "600",
-              cursor: "pointer",
-              padding: "8px 16px",
-              borderRadius: "6px",
-              transition: "all 0.2s ease"
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = "#eff6ff";
-              e.target.style.textDecoration = "underline";
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = "transparent";
-              e.target.style.textDecoration = "none";
-            }}
-          >
-            Create Account Here →
-          </button>
         </div>
       </div>
-
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }
-
-const inputStyle = {
-  width: "100%",
-  padding: "14px 16px",
-  marginBottom: "0",
-  border: "2px solid #e2e8f0",
-  borderRadius: "8px",
-  fontSize: "16px",
-  transition: "all 0.2s ease",
-  outline: "none",
-  backgroundColor: "#ffffff"
-};
-
-const buttonStyle = {
-  width: "100%",
-  padding: "14px 24px",
-  backgroundColor: "#3b82f6",
-  color: "#ffffff",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontSize: "16px",
-  fontWeight: "600",
-  boxShadow: "0 4px 12px rgba(59, 130, 246, 0.2)",
-  transition: "all 0.2s ease"
-};
