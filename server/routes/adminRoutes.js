@@ -208,7 +208,7 @@ router.get('/products', adminAuth, async (req, res) => {
 // Add new product
 router.post('/products', adminAuth, upload.single('image'), async (req, res) => {
   try {
-    const { name, description, price, category, stock } = req.body;
+    const { name, description, price, category, stock, sku, specifications, stockStatus, deliveryInfo, certifications, relatedProducts, usageAreas, faqs, datasheetUrl, bulkPricing } = req.body;
 
     // Validation
     if (!name || !price || !category) {
@@ -225,7 +225,17 @@ router.post('/products', adminAuth, upload.single('image'), async (req, res) => 
       price: parseFloat(price),
       category: category.trim(),
       stockQuantity: parseInt(stock) || 0,
-      inStock: parseInt(stock) > 0
+      inStock: parseInt(stock) > 0,
+      sku: sku?.trim(),
+      specifications: specifications ? JSON.parse(specifications) : {},
+      stockStatus: stockStatus || (parseInt(stock) > 0 ? 'in_stock' : 'out_of_stock'),
+      deliveryInfo: deliveryInfo ? JSON.parse(deliveryInfo) : {},
+      certifications: certifications ? (Array.isArray(certifications) ? certifications : certifications.split(',').map(s=>s.trim())) : [],
+      relatedProducts: relatedProducts ? (Array.isArray(relatedProducts) ? relatedProducts : relatedProducts.split(',').map(s=>s.trim())) : [],
+      usageAreas: usageAreas ? (Array.isArray(usageAreas) ? usageAreas : usageAreas.split(',').map(s=>s.trim())) : [],
+      faqs: faqs ? JSON.parse(faqs) : [],
+      datasheetUrl: datasheetUrl || '',
+      bulkPricing: bulkPricing ? JSON.parse(bulkPricing) : []
     };
 
     // Add image if uploaded: upload to Cloudinary if configured, otherwise use local uploads
@@ -275,7 +285,7 @@ router.post('/products', adminAuth, upload.single('image'), async (req, res) => 
 router.put('/products/:id', adminAuth, upload.single('image'), async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, price, category, stock } = req.body;
+    const { name, description, price, category, stock, sku, specifications, stockStatus, deliveryInfo, certifications, relatedProducts, usageAreas, faqs, datasheetUrl, bulkPricing } = req.body;
 
     // Find product
     const product = await Product.findById(id);
@@ -295,6 +305,16 @@ router.put('/products/:id', adminAuth, upload.single('image'), async (req, res) 
       product.stockQuantity = parseInt(stock);
       product.inStock = parseInt(stock) > 0;
     }
+    if (sku !== undefined) product.sku = sku?.trim() || product.sku;
+    if (specifications !== undefined) product.specifications = specifications ? JSON.parse(specifications) : product.specifications;
+    if (stockStatus !== undefined) product.stockStatus = stockStatus;
+    if (deliveryInfo !== undefined) product.deliveryInfo = deliveryInfo ? JSON.parse(deliveryInfo) : product.deliveryInfo;
+    if (certifications !== undefined) product.certifications = certifications ? (Array.isArray(certifications) ? certifications : certifications.split(',').map(s=>s.trim())) : product.certifications;
+    if (relatedProducts !== undefined) product.relatedProducts = relatedProducts ? (Array.isArray(relatedProducts) ? relatedProducts : relatedProducts.split(',').map(s=>s.trim())) : product.relatedProducts;
+    if (usageAreas !== undefined) product.usageAreas = usageAreas ? (Array.isArray(usageAreas) ? usageAreas : usageAreas.split(',').map(s=>s.trim())) : product.usageAreas;
+    if (faqs !== undefined) product.faqs = faqs ? JSON.parse(faqs) : product.faqs;
+    if (datasheetUrl !== undefined) product.datasheetUrl = datasheetUrl || product.datasheetUrl;
+    if (bulkPricing !== undefined) product.bulkPricing = bulkPricing ? JSON.parse(bulkPricing) : product.bulkPricing;
 
     // Update image if uploaded (upload to Cloudinary when available)
     if (req.file) {
@@ -585,6 +605,25 @@ router.get('/users', adminAuth, async (req, res) => {
       success: false,
       message: 'Failed to fetch users'
     });
+  }
+});
+
+// Block or unblock a user
+router.put('/users/:id/block', superAdminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { block } = req.body; // true to block, false to unblock
+    const user = await User.findById(id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    user.isBlocked = !!block;
+    await user.save();
+
+    console.log(`🔒 User ${user.email} ${block ? 'blocked' : 'unblocked'} by ${req.admin.email}`);
+    res.json({ success: true, message: `User ${block ? 'blocked' : 'unblocked'} successfully`, data: { user } });
+  } catch (error) {
+    console.error('Block user error:', error);
+    res.status(500).json({ success: false, message: 'Failed to update user status' });
   }
 });
 

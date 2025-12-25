@@ -31,6 +31,11 @@ const productSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  sku: {
+    type: String,
+    trim: true,
+    index: true
+  },
   inStock: {
     type: Boolean,
     default: true
@@ -40,12 +45,30 @@ const productSchema = new mongoose.Schema({
     default: 0,
     min: 0
   },
+  // Flexible key/value specifications for B2B details
   specifications: {
-    material: String,
-    dimensions: String,
-    weight: String,
-    finish: String
+    type: Map,
+    of: String,
+    default: {}
   },
+  // Stock status enum for clearer frontend badges
+  stockStatus: {
+    type: String,
+    enum: ['in_stock', 'out_of_stock', 'limited'],
+    default: 'in_stock'
+  },
+  deliveryInfo: {
+    deliveryTime: { type: String }, // e.g. "2-4 business days"
+    codAvailable: { type: Boolean, default: true },
+    returnPolicy: { type: String }
+  },
+  certifications: [{ type: String }],
+  relatedProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }],
+  usageAreas: [{ type: String }],
+  faqs: [{ question: String, answer: String }],
+  datasheetUrl: { type: String },
+  bulkPricing: [{ minQty: Number, maxQty: Number, price: Number }],
+  reviews: [{ user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, rating: Number, comment: String }],
   isActive: {
     type: Boolean,
     default: true

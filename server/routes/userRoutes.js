@@ -143,8 +143,20 @@ router.get("/profile", authenticateToken, async (req, res) => {
 // Update profile (name, phone, address)
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
-    const { name, phone, address, company, gstNumber, dob, secondaryPhone, socialLinks } = req.body;
+    const { name, phone, address, company, gstNumber, dob, secondaryPhone, socialLinks, email } = req.body;
     const user = req.user;
+    // Allow email change with validation and uniqueness check
+    if (email && email !== user.email) {
+      const normalizedEmail = String(email).toLowerCase().trim();
+      if (!validateEmail(normalizedEmail)) {
+        return res.status(400).json({ success: false, message: 'Invalid email address' });
+      }
+      const exists = await User.findOne({ email: normalizedEmail });
+      if (exists && String(exists._id) !== String(user._id)) {
+        return res.status(400).json({ success: false, message: 'Email already in use' });
+      }
+      user.email = normalizedEmail;
+    }
     if (name) user.name = name;
     if (phone) user.phone = phone;
     if (company) user.company = company;
@@ -156,7 +168,21 @@ router.put('/profile', authenticateToken, async (req, res) => {
       user.address = { ...user.address, ...address };
     }
     await user.save();
-    return res.status(200).json({ success: true, user });
+    // Return sanitized user object
+    const safeUser = {
+      id: user._id,
+      username: user.username,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      profileImage: user.profileImage || '',
+      address: user.address || {},
+      company: user.company || '',
+      gstNumber: user.gstNumber || '',
+      secondaryPhone: user.secondaryPhone || '',
+      socialLinks: user.socialLinks || {}
+    };
+    return res.status(200).json({ success: true, user: safeUser });
   } catch (err) {
     console.error('Update profile error:', err);
     return res.status(500).json({ success: false, message: 'Failed to update profile' });

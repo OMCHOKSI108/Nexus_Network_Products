@@ -64,6 +64,7 @@ const Profile = () => {
     try { social = JSON.parse(form.socialLinks || '{}'); } catch (e) { /* ignore */ }
     const updates = {
       name: form.name,
+      email: form.email,
       phone: form.phone,
       address: {
         addressLine1: form.addressLine1,
@@ -79,6 +80,13 @@ const Profile = () => {
     const res = await userService.updateProfile(updates);
     if (res.success) {
       addToast('Profile updated successfully', 'success');
+      // Emit event so App can update its user state without full reload
+      try {
+        const updatedUser = res.user || (await authService.getProfile()).user;
+        window.dispatchEvent(new CustomEvent('user-profile-updated', { detail: updatedUser }));
+      } catch (e) {
+        window.location.reload();
+      }
     } else {
       addToast(res.message || 'Failed to update profile', 'error');
     }
@@ -111,7 +119,7 @@ const Profile = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Email</label>
-              <input name="email" type="email" value={form.email} readOnly className="w-full border rounded px-3 py-2 bg-gray-100" />
+              <input name="email" type="email" value={form.email} onChange={onChange} className="w-full border rounded px-3 py-2" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Phone</label>

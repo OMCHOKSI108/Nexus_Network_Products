@@ -66,6 +66,19 @@ function AppContent() {
     return () => clearTimeout(timeoutId);
   }, []);
 
+  // Listen for profile updates from Profile component and update app state
+  useEffect(() => {
+    const handler = (e) => {
+      const updated = e.detail;
+      if (updated) {
+        setUser(updated);
+        setIsLoggedIn(true);
+      }
+    };
+    window.addEventListener('user-profile-updated', handler);
+    return () => window.removeEventListener('user-profile-updated', handler);
+  }, []);
+
   const handleLogin = async (loginData) => {
     try {
       // If this is called from our updated Login component, it will have user and token

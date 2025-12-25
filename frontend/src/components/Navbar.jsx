@@ -41,7 +41,7 @@ const Navbar = ({ user, isLoggedIn, onLogout, onOpenLogin, onOpenCart, cartUpdat
             <img
               src={CLOUDINARY_LOGO}
               alt="NexusNetwork Logo"
-              className="h-16 w-32 object-contain"
+              className="h-14 w-28 object-contain"
               onError={(e) => {
                 // Fallback to text logo if image fails to load
                 e.target.style.display = 'none';

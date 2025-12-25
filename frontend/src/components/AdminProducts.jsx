@@ -17,6 +17,13 @@ const AdminProducts = () => {
     price: '',
     category: '',
     stock: '',
+    sku: '',
+    specifications: '', // JSON expected: {"Key": "Value"}
+    stockStatus: 'in_stock', // in_stock | low_stock | out_of_stock | backorder
+    certifications: '', // comma-separated
+    deliveryInfo: '',
+    datasheetUrl: '',
+    bulkPricing: '', // JSON array expected
     image: null
   });
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,6 +67,13 @@ const AdminProducts = () => {
       price: '',
       category: '',
       stock: '',
+      sku: '',
+      specifications: '',
+      stockStatus: 'in_stock',
+      certifications: '',
+      deliveryInfo: '',
+      datasheetUrl: '',
+      bulkPricing: '',
       image: null
     });
   };
@@ -119,7 +133,14 @@ const AdminProducts = () => {
       description: product.description || '',
       price: product.price.toString(),
       category: product.category,
-      stock: product.stock.toString(),
+      stock: (product.stockQuantity ?? product.stock ?? 0).toString(),
+      sku: product.sku || '',
+      specifications: product.specifications ? JSON.stringify(Object.fromEntries(product.specifications), null, 2) : '',
+      stockStatus: product.stockStatus || 'in_stock',
+      certifications: (product.certifications || []).join(', '),
+      deliveryInfo: product.deliveryInfo || '',
+      datasheetUrl: product.datasheetUrl || '',
+      bulkPricing: product.bulkPricing ? JSON.stringify(product.bulkPricing, null, 2) : '',
       image: null
     });
     setShowEditModal(true);
@@ -232,6 +253,9 @@ const AdminProducts = () => {
                       Product
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      SKU
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Category
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -264,6 +288,9 @@ const AdminProducts = () => {
                             <div className="text-sm text-gray-500">{product.description?.substring(0, 50)}...</div>
                           </div>
                         </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {product.sku || '-'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {product.category}
@@ -399,6 +426,162 @@ const AdminProducts = () => {
                     onChange={handleFormChange}
                     min="0"
                     required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">SKU / Product Code</label>
+                  <input
+                    type="text"
+                    name="sku"
+                    value={formData.sku}
+                    onChange={handleFormChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Specifications (JSON)</label>
+                  <textarea
+                    name="specifications"
+                    value={formData.specifications}
+                    onChange={handleFormChange}
+                    rows="3"
+                    placeholder='{"Material": "Brass", "Size": "1/2"}'
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Stock Status</label>
+                  <select
+                    name="stockStatus"
+                    value={formData.stockStatus}
+                    onChange={handleFormChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="in_stock">In Stock</option>
+                    <option value="low_stock">Low Stock</option>
+                    <option value="out_of_stock">Out of Stock</option>
+                    <option value="backorder">Backorder</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Certifications (comma-separated)</label>
+                  <input
+                    type="text"
+                    name="certifications"
+                    value={formData.certifications}
+                    onChange={handleFormChange}
+                    placeholder="ISO 9001, RoHS"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Delivery / Shipping Info</label>
+                  <textarea
+                    name="deliveryInfo"
+                    value={formData.deliveryInfo}
+                    onChange={handleFormChange}
+                    rows="2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Datasheet URL</label>
+                  <input
+                    type="text"
+                    name="datasheetUrl"
+                    value={formData.datasheetUrl}
+                    onChange={handleFormChange}
+                    placeholder="https://.../datasheet.pdf"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Bulk Pricing (JSON array)</label>
+                  <textarea
+                    name="bulkPricing"
+                    value={formData.bulkPricing}
+                    onChange={handleFormChange}
+                    rows="3"
+                    placeholder='[{"min":10,"price":90},{"min":50,"price":80}]'
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">SKU / Product Code</label>
+                  <input
+                    type="text"
+                    name="sku"
+                    value={formData.sku}
+                    onChange={handleFormChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Specifications (JSON)</label>
+                  <textarea
+                    name="specifications"
+                    value={formData.specifications}
+                    onChange={handleFormChange}
+                    rows="3"
+                    placeholder='{"Material": "Brass", "Size": "1/2"}'
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Stock Status</label>
+                  <select
+                    name="stockStatus"
+                    value={formData.stockStatus}
+                    onChange={handleFormChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="in_stock">In Stock</option>
+                    <option value="low_stock">Low Stock</option>
+                    <option value="out_of_stock">Out of Stock</option>
+                    <option value="backorder">Backorder</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Certifications (comma-separated)</label>
+                  <input
+                    type="text"
+                    name="certifications"
+                    value={formData.certifications}
+                    onChange={handleFormChange}
+                    placeholder="ISO 9001, RoHS"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Delivery / Shipping Info</label>
+                  <textarea
+                    name="deliveryInfo"
+                    value={formData.deliveryInfo}
+                    onChange={handleFormChange}
+                    rows="2"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Datasheet URL</label>
+                  <input
+                    type="text"
+                    name="datasheetUrl"
+                    value={formData.datasheetUrl}
+                    onChange={handleFormChange}
+                    placeholder="https://.../datasheet.pdf"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Bulk Pricing (JSON array)</label>
+                  <textarea
+                    name="bulkPricing"
+                    value={formData.bulkPricing}
+                    onChange={handleFormChange}
+                    rows="3"
+                    placeholder='[{"min":10,"price":90},{"min":50,"price":80}]'
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>

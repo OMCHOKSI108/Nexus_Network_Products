@@ -392,7 +392,7 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
                     alt={product.name}
                     onError={handleImgError}
                     loading="lazy"
-                    className="w-full h-48 object-cover bg-gray-100"
+                    className="w-full h-44 object-cover bg-gray-100"
                   />
                 </Link>
                 <div className="p-4">
@@ -411,12 +411,14 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
                   {/* Stock Status */}
                   <div className="mb-3">
                     {product.inStock && product.stockQuantity > 0 ? (
-                      <span className="text-green-600 text-sm font-medium">
-                        ✓ In Stock ({product.stockQuantity} available)
+                      <span className="inline-flex items-center text-sm font-medium text-green-700">
+                        <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17l-5-5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        In Stock ({product.stockQuantity} available)
                       </span>
                     ) : (
-                      <span className="text-red-600 text-sm font-medium">
-                        ✗ Out of Stock
+                      <span className="inline-flex items-center text-sm font-medium text-red-600">
+                        <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 6L6 18M6 6l12 12" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        Out of Stock
                       </span>
                     )}
                   </div>
