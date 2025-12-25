@@ -19,7 +19,7 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
     { name: 'brass fitting', file: 'Brass fitting.webp' }
   ];
 
-  const imageBasePath = '/images/products/pressure-gauge-parts/premium';
+  const imageBasePath = '/products/pressure-gauge-parts/premium';
   const [categoryImages, setCategoryImages] = useState({});
 
   // Try to get a representative image for each category from the product API (Cloudinary URLs after seeding)

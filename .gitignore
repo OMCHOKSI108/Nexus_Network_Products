@@ -49,6 +49,9 @@ $RECYCLE.BIN/
 .env.development.local
 .env.test.local
 .env.production.local
+.env_vercel
+.env_render
+.env.production.local
 .env.staging
 
 # Logs
