@@ -28,7 +28,6 @@ router.post("/register", async (req, res) => {
     }
 
     const existingUser = await User.findOne({ email: normalizedEmail });
-
     if (existingUser) {
       return res.status(400).json({ success: false, message: "User already exists with this email" });
     }
@@ -41,57 +40,30 @@ router.post("/register", async (req, res) => {
 
     try {
       await user.save();
-      console.log("✅ User registered:", user._id);
-
-      const token = generateToken(user._id);
-
-      res.status(201).json({
-        success: true,
-        message: "User registered successfully",
-        token,
-        try {
-          await user.save();
-          const token = generateToken(user._id);
-          res.status(201).json({
-            success: true,
-            message: "User registered successfully",
-            token,
-            user: {
-              id: user._id,
-              username: user.username,
-              email: user.email,
-              createdAt: user.createdAt,
-            },
-          });
-        } catch (err) {
-          // Handle Mongoose validation errors for email and username
-          if (err.name === "ValidationError" && err.errors) {
-            if (err.errors.email) {
-              return res.status(400).json({
-                success: false,
-                message: err.errors.email.message
-              });
-            }
-            if (err.errors.username) {
-              return res.status(400).json({
-                success: false,
-                message: err.errors.username.message
-              });
-            }
-          }
-          throw err;
-        }
-          });
+    } catch (err) {
+      if (err.name === "ValidationError" && err.errors) {
+        if (err.errors.email) {
+          return res.status(400).json({ success: false, message: err.errors.email.message });
         }
         if (err.errors.username) {
-          return res.status(400).json({
-            success: false,
-            message: err.errors.username.message
-          });
+          return res.status(400).json({ success: false, message: err.errors.username.message });
         }
       }
       throw err;
     }
+
+    const token = generateToken(user._id);
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        createdAt: user.createdAt,
+      },
+    });
   } catch (error) {
     console.error("⚠️ Registration error:", error);
     res.status(500).json({ success: false, message: "Server error during registration" });
