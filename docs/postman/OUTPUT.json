@@ -1,0 +1,232 @@
+{
+	"info": {
+		"_postman_id": "bccd8bf7-ac14-42a9-838a-52de1dcee183",
+		"name": "Nexus Network Products - Full API",
+		"description": "Collection for testing Nexus Network Products backend. Update the environment `base_url` to point to your deployed server.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "50428643",
+		"_collection_link": "https://omchoksi99-5436130.postman.co/workspace/OM-CHOKSI's-Workspace~ef6d32ff-616c-4cdd-8d3c-eaa0cc7d883f/collection/50428643-bccd8bf7-ac14-42a9-838a-52de1dcee183?action=share&source=collection_link&creator=50428643"
+	},
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "GET /api (health)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/api"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "POST /api/users/register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Test User\",\n  \"email\": \"test+{{timestamp}}@example.com\",\n  \"password\": \"test12345\"\n}"
+						},
+						"url": "{{base_url}}/api/users/register"
+					},
+					"response": []
+				},
+				{
+					"name": "POST /api/users/login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"try {",
+									"  var j = pm.response.json();",
+									"  var token = j.token || (j.data && j.data.token) || j.accessToken || null;",
+									"  if (token) { pm.environment.set('authToken', token); pm.test('Saved authToken', function(){pm.expect(token).to.be.a('string')}); }",
+									"} catch(e) {}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+						},
+						"url": "{{base_url}}/api/users/login"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /api/users/profile (protected)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": "{{base_url}}/api/users/profile"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "GET /api/products (list)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/products?limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"products"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET /api/products/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/api/products/{{productId}}"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "GET /api/cart (protected)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": "{{base_url}}/api/cart"
+					},
+					"response": []
+				},
+				{
+					"name": "POST /api/cart (add item)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{productId}}\",\n  \"quantity\": 1\n}"
+						},
+						"url": "{{base_url}}/api/cart"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orders",
+			"item": [
+				{
+					"name": "POST /api/orders (create order)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cartId\": \"{{cartId}}\",\n  \"shippingAddress\": { \"line1\": \"123 Main\", \"city\": \"City\", \"postalCode\": \"12345\", \"country\": \"Country\" }\n}"
+						},
+						"url": "{{base_url}}/api/orders"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Contact",
+			"item": [
+				{
+					"name": "POST /api/contact",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Tester\",\n  \"email\": \"tester@example.com\",\n  \"message\": \"Hello from Postman\"\n}"
+						},
+						"url": "{{base_url}}/api/contact"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "",
+			"type": "default"
+		}
+	]
+}

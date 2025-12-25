@@ -1,6 +1,12 @@
 // API URL configuration
 // Default to backend dev port 3004 (matches server `server.js` default)
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3004/api';
+let API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3004/api';
+
+// Ensure API_BASE_URL ends with '/api' so services always call the API prefix
+if (!API_BASE_URL.endsWith('/api')) {
+	// Trim trailing slash then append '/api'
+	API_BASE_URL = API_BASE_URL.replace(/\/+$/,'') + '/api';
+}
 
 // Derive uploads base (strip trailing '/api' if present)
 let UPLOADS_BASE = API_BASE_URL;
