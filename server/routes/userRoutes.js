@@ -11,7 +11,6 @@ const validatePassword = (password) => password && password.length >= 6;
 // ✅ REGISTER (no hashing)
 router.post("/register", async (req, res) => {
   try {
-    console.log("📥 Signup Data received:", req.body);
     const { name, username, email, password } = req.body;
     const finalUsername = name || username;
     const normalizedEmail = email?.toLowerCase().trim();
@@ -37,7 +36,7 @@ router.post("/register", async (req, res) => {
     const user = new User({
       username: finalUsername.trim(),
       email: normalizedEmail,
-      password, // ⚠️ Stored as plain text (for testing/demo only)
+      password, // will be hashed by model pre-save hook
     });
 
     try {
@@ -50,20 +49,38 @@ router.post("/register", async (req, res) => {
         success: true,
         message: "User registered successfully",
         token,
-        user: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-          createdAt: user.createdAt,
-        },
-      });
-    } catch (err) {
-      // Handle Mongoose validation errors for email and username
-      if (err.name === "ValidationError" && err.errors) {
-        if (err.errors.email) {
-          return res.status(400).json({
-            success: false,
-            message: err.errors.email.message
+        try {
+          await user.save();
+          const token = generateToken(user._id);
+          res.status(201).json({
+            success: true,
+            message: "User registered successfully",
+            token,
+            user: {
+              id: user._id,
+              username: user.username,
+              email: user.email,
+              createdAt: user.createdAt,
+            },
+          });
+        } catch (err) {
+          // Handle Mongoose validation errors for email and username
+          if (err.name === "ValidationError" && err.errors) {
+            if (err.errors.email) {
+              return res.status(400).json({
+                success: false,
+                message: err.errors.email.message
+              });
+            }
+            if (err.errors.username) {
+              return res.status(400).json({
+                success: false,
+                message: err.errors.username.message
+              });
+            }
+          }
+          throw err;
+        }
           });
         }
         if (err.errors.username) {
@@ -101,13 +118,13 @@ router.post("/login", async (req, res) => {
       return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    if (user.password !== password) {
+    const isValid = await user.comparePassword(password);
+    if (!isValid) {
       return res.status(401).json({ success: false, message: "Invalid password" });
     }
 
     const token = generateToken(user._id);
-    user.lastLogin = new Date();
-    await user.save();
+    await user.updateLastLogin();
 
     res.status(200).json({
       success: true,

@@ -37,9 +37,9 @@ const Navbar = ({ user, isLoggedIn, onLogout, onOpenLogin, onOpenCart, cartUpdat
           {/* Logo and Brand */}
           <div className="flex items-center space-x-3">
             {/* Your custom logo */}
-            <img 
-              src="/frontend/public/image.png" 
-              alt="NexusNetwork Logo" 
+            <img
+              src="/icon.svg"
+              alt="NexusNetwork Logo"
               className="h-16 w-32 object-contain"
               onError={(e) => {
                 // Fallback to text logo if image fails to load
@@ -181,19 +181,13 @@ const Navbar = ({ user, isLoggedIn, onLogout, onOpenLogin, onOpenCart, cartUpdat
                   )}
                 </div>
               ) : (
-                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-3">
                   <button 
                     onClick={onOpenLogin}
                     className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-medium transition-colors"
                   >
                     Login
                   </button>
-                  <Link 
-                    to="/admin/login"
-                    className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-sm"
-                  >
-                    Admin
-                  </Link>
                 </div>
               )}
             </div>
@@ -277,13 +271,7 @@ const Navbar = ({ user, isLoggedIn, onLogout, onOpenLogin, onOpenCart, cartUpdat
                 >
                   Login
                 </button>
-                <Link 
-                  to="/admin/login"
-                  className="block w-full bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors text-center"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Admin Login
-                </Link>
+                {/* Admin access is intentionally hidden from public navigation */}
               </div>
             )}
           </div>

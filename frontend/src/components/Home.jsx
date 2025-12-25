@@ -91,7 +91,7 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
                     </button>
                   </div>
                 </div>
-                <div className="flex justify-center">
+                <div className="flex justify-center relative">
                   <div className="bg-white bg-opacity-10 p-8 rounded-2xl backdrop-blur-sm">
                     <img 
                       src="/images/products/pressure-gauge-parts/premium/Brass%20parts%20and%20fitting.jpg" 
@@ -102,7 +102,34 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
                         e.target.src = "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=500&h=400&fit=crop&crop=center";
                       }}
                     />
+
+                    {/* Right-side brand logo placed in the blank area - visible on md+ screens */}
+                    {/* <img
+                      src="/img0.png"
+                      alt="NexusNetwork logo"
+                      className="hidden md:block absolute top-6 right-8 w-28 h-28 md:w-36 md:h-36 object-contain bg-white p-2 rounded shadow"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    /> */}
+
+                    {/* Right-side Brand Logo — transparent background, slightly larger, blends with hero */}
                   </div>
+
+                  {/* Right-side Brand Logo — positioned relative to the hero column */}
+                  <img
+  src="/img0.png"
+  alt="NexusNetwork Logo"
+  className="
+    hidden md:block
+    absolute
+    right-50
+    -translate-y-1/2
+    w-94 h-94
+    object-contain
+    drop-shadow-xl
+  "
+  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+/>
+
                 </div>
               </div>
             </div>

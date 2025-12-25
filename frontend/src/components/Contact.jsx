@@ -75,7 +75,7 @@ const Contact = () => {
           Get in touch with us for inquiries and support
         </p>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           <div>
             <h3 className="text-2xl font-semibold text-blue-700 mb-6">
               Get In Touch

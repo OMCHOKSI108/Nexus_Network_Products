@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema(
   {
@@ -35,7 +36,38 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// No pre-save hook
-// No bcrypt comparison
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Compare password helper
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  try {
+    const isMatch = await bcrypt.compare(candidatePassword, this.password);
+    return isMatch;
+  } catch (err) {
+    throw err;
+  }
+};
+
+userSchema.methods.updateLastLogin = async function() {
+  this.lastLogin = new Date();
+  await this.save();
+};
+
+// Hide sensitive fields when converting to JSON
+userSchema.methods.toJSON = function() {
+  const obj = this.toObject();
+  delete obj.password;
+  return obj;
+};
 
 module.exports = mongoose.model("User", userSchema);
