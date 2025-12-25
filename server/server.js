@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 const authRoutes = require("./routes/userRoutes");
 const cartRoutes = require("./routes/cartRoutes");
 const productRoutes = require("./routes/productRoutes");
@@ -43,6 +44,15 @@ app.use(express.json());
 
 // Serve static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve static images directory at /images if present (product image paths use /images/...)
+const imagesDir = path.join(__dirname, 'images');
+if (fs.existsSync(imagesDir)) {
+  app.use('/images', express.static(imagesDir));
+  console.log(`📁 Serving /images from ${imagesDir}`);
+} else {
+  console.log('ℹ️  No server/images directory found; /images requests must be served by CDN or frontend public folder.');
+}
 
 // Add request logging
 app.use((req, res, next) => {
