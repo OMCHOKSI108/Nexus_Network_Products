@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import productService from '../services/productService';
+import { UPLOADS_BASE } from '../config/api';
 import cartService from '../services/cartService';
 import { useNotification } from './Notification';
 
@@ -56,7 +57,13 @@ const ProductDetail = ({ isLoggedIn, onUpdateCartCount }) => {
 
   const chooseImage = () => {
     if (!product) return '/placeholder.png';
-    if (product.image) return product.image;
+    if (product.image) {
+      const img = product.image;
+      if (/^https?:\/\//i.test(img)) return img;
+      const base = UPLOADS_BASE.replace(/\/+$/,'');
+      if (img.startsWith('/')) return `${base}${img}`;
+      return `${base}/${img.replace(/^\/+/, '')}`;
+    }
     if (!imageManifest.length) return '/placeholder.png';
 
     const slug = slugify(product.name || '');

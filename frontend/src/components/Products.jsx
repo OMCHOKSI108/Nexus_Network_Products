@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import productService from '../services/productService';
+import { UPLOADS_BASE } from '../config/api';
 import cartService from '../services/cartService';
 import Login from './Login';
 import Signup from './Signup';
@@ -102,7 +103,21 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
   }, [imageManifest]);
 
   const getImageForProduct = (product, idx) => {
-    // Simple deterministic assignment by index for reliability
+    // If product has an explicit image, prefer it
+    if (product?.image) {
+      const img = product.image;
+      // If it's an absolute URL, return as-is
+      if (/^https?:\/\//i.test(img)) return img;
+      // If it's a server-relative uploads path (starts with /images), prefix with UPLOADS_BASE
+      if (img.startsWith('/')) {
+        const base = UPLOADS_BASE.replace(/\/+$/,'');
+        return `${base}${img}`;
+      }
+      // otherwise treat as relative to uploads base
+      return `${UPLOADS_BASE.replace(/\/+$/,'')}/${img.replace(/^\/+/, '')}`;
+    }
+
+    // Fallback to local manifest images if no product image specified
     if (!imageManifest.length) return 'https://via.placeholder.com/300x200?text=Product';
     const assigned = imageManifest[idx % imageManifest.length];
     return `/images/products/pressure-gauge-parts/premium/${encodeURIComponent(assigned)}`;
