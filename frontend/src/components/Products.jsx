@@ -127,13 +127,13 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
     }
 
     // Fallback to local manifest images if no product image specified
-    if (!imageManifest.length) return 'https://via.placeholder.com/300x200?text=Product';
+    if (!imageManifest.length) return '/image_01.png';
     const assigned = imageManifest[idx % imageManifest.length];
     return `/products/${encodeURIComponent(assigned)}`;
   };
 
   const handleImgError = (e) => {
-    e.currentTarget.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+    e.currentTarget.src = '/image_01.png';
     e.currentTarget.onerror = null; // prevent infinite loop
   };
 

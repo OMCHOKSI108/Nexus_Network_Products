@@ -174,7 +174,7 @@ const Cart = ({ isOpen, onClose, user, isLoggedIn, cartUpdateTrigger }) => {
                   return (
                   <div key={productId} className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
                     <img
-                      src={item.productImage || 'https://via.placeholder.com/80x80?text=Product'}
+                      src={item.productImage || '/image_01.png'}
                       alt={item.productName}
                       className="w-16 h-16 object-cover rounded-lg"
                     />

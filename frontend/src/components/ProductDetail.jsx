@@ -61,6 +61,10 @@ const ProductDetail = ({ isLoggedIn, onUpdateCartCount }) => {
     if (product.image) {
       const img = product.image;
       if (/^https?:\/\//i.test(img)) return img;
+      // If it's a server-relative path that points to `/products`, return it as-is
+      if (img.startsWith('/products')) {
+        return img;
+      }
       const base = UPLOADS_BASE.replace(/\/+$/,'');
       if (img.startsWith('/')) return `${base}${img}`;
       return `${base}/${img.replace(/^\/+/, '')}`;
@@ -118,7 +122,7 @@ const ProductDetail = ({ isLoggedIn, onUpdateCartCount }) => {
     <div className="container mx-auto p-8">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <img src={chooseImage()} alt={product.name} onError={(e)=>{e.currentTarget.src='https://via.placeholder.com/600x400?text=Image+Not+Found'; e.currentTarget.onerror=null;}} className="w-full object-cover rounded-md shadow bg-gray-100 max-h-96" />
+          <img src={chooseImage()} alt={product.name} onError={(e)=>{e.currentTarget.src='/image_01.png'; e.currentTarget.onerror=null;}} className="w-full object-cover rounded-md shadow bg-gray-100 max-h-96" />
         </div>
         <div>
           <h1 className="text-2xl md:text-3xl font-bold mb-4">{product.name}</h1>

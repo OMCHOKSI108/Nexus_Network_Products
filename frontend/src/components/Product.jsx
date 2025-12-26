@@ -5,17 +5,17 @@ const Product = () => {
     {
       name: "Brass Cable Glands",
       description: "High-quality brass cable glands for electrical installations",
-      image: "https://via.placeholder.com/300x200?text=Brass+Cable+Glands"
+      image: "/image_01.png"
     },
     {
       name: "Brass Electrical Components",
       description: "Precision-engineered brass electrical components",
-      image: "https://via.placeholder.com/300x200?text=Electrical+Components"
+      image: "/image_01.png"
     },
     {
       name: "Brass Screws",
       description: "Durable brass screws for various applications",
-      image: "https://via.placeholder.com/300x200?text=Brass+Screws"
+      image: "/image_01.png"
     }
   ];
 

@@ -19,7 +19,7 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
     { name: 'brass fitting', file: 'Brass fitting.webp' }
   ];
 
-  const imageBasePath = '/products/pressure-gauge-parts/premium';
+  const imageBasePath = '/products';
   const [categoryImages, setCategoryImages] = useState({});
 
   // Try to get a representative image for each category from the product API (Cloudinary URLs after seeding)
@@ -227,7 +227,7 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
                         src={categoryImages[cat.name] || `${imageBasePath}/${encodeURIComponent(cat.file)}`}
                         alt={cat.name}
                         loading="lazy"
-                        onError={(e) => { e.currentTarget.src = 'https://via.placeholder.com/400x250?text=Image'; e.currentTarget.onerror = null; }}
+                        onError={(e) => { e.currentTarget.src = '/image_01.png'; e.currentTarget.onerror = null; }}
                         className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       />
                     </div>
