@@ -64,19 +64,9 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
     }
   };
 
-  // Build logo source: prefer Cloudinary (and apply size transform), fallback to local
+  // Build logo source: prefer local img0.png, fallback to Cloudinary if available
   const getLogoSrc = () => {
-    if (CLOUDINARY_LOGO) {
-      try {
-        // If Cloudinary URL has an /upload/ segment, inject a size transform
-        if (CLOUDINARY_LOGO.includes('/upload/')) {
-          return CLOUDINARY_LOGO.replace('/upload/', '/upload/c_fill,w_800,h_800/');
-        }
-        return CLOUDINARY_LOGO;
-      } catch (e) {
-        return CLOUDINARY_LOGO;
-      }
-    }
+    // Always try local img0.png first
     return '/img0.png';
   };
 
