@@ -75,7 +75,7 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
   useEffect(() => {
     const loadManifest = async () => {
       try {
-        const res = await fetch('/products/pressure-gauge-parts/premium/manifest.json');
+        const res = await fetch('/products/manifest.json');
         if (!res.ok) throw new Error('Failed to load image manifest');
         const ct = res.headers.get('content-type') || '';
         if (!ct.includes('application/json')) {
@@ -129,7 +129,7 @@ const Products = ({ isLoggedIn, onUpdateCartCount, showLogin, onOpenLogin, onClo
     // Fallback to local manifest images if no product image specified
     if (!imageManifest.length) return 'https://via.placeholder.com/300x200?text=Product';
     const assigned = imageManifest[idx % imageManifest.length];
-    return `/products/pressure-gauge-parts/premium/${encodeURIComponent(assigned)}`;
+    return `/products/${encodeURIComponent(assigned)}`;
   };
 
   const handleImgError = (e) => {
