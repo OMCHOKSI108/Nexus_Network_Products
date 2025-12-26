@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { CLOUDINARY_LOGO } from '../config/api';
 import { useNavigate } from "react-router-dom";
 import Login from "./Login";
 import Signup from "./Signup";
