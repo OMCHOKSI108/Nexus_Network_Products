@@ -15,6 +15,10 @@
       "dest": "/assets/$1"
     },
     {
+      "src": "/products/(.*)",
+      "dest": "/products/$1"
+    },
+    {
       "src": "/images/(.*)",
       "dest": "/products/$1",
       "headers": {

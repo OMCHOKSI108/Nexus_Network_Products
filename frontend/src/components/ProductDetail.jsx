@@ -35,7 +35,7 @@ const ProductDetail = ({ isLoggedIn, onUpdateCartCount }) => {
   useEffect(() => {
     const loadManifest = async () => {
       try {
-        const res = await fetch('/products/pressure-gauge-parts/premium/manifest.json');
+        const res = await fetch('/products/manifest.json');
         if (!res.ok) throw new Error('Manifest fetch failed');
         const data = await res.json();
         if (Array.isArray(data)) setImageManifest(data);
@@ -69,17 +69,17 @@ const ProductDetail = ({ isLoggedIn, onUpdateCartCount }) => {
 
     const slug = slugify(product.name || '');
     if (filenameIndexBySlug[slug]) {
-      return `/products/pressure-gauge-parts/premium/${encodeURIComponent(filenameIndexBySlug[slug])}`;
+      return `/products/${encodeURIComponent(filenameIndexBySlug[slug])}`;
     }
     const words = slug.split('-').filter(w => w.length > 2);
     const fuzzy = imageManifest.find(f => {
       const fslug = slugify(f.replace(/\.(avif|webp|jpe?g|png)$/i,''));
       return words.every(w => fslug.includes(w));
     });
-    if (fuzzy) return `/products/pressure-gauge-parts/premium/${encodeURIComponent(fuzzy)}`;
+    if (fuzzy) return `/products/${encodeURIComponent(fuzzy)}`;
     // fallback random deterministic by hash
     const idx = Math.abs(slug.split('').reduce((a,c)=>a+c.charCodeAt(0),0)) % imageManifest.length;
-    return `/products/pressure-gauge-parts/premium/${encodeURIComponent(imageManifest[idx])}`;
+    return `/products/${encodeURIComponent(imageManifest[idx])}`;
   };
 
   const { addToast } = useNotification();
