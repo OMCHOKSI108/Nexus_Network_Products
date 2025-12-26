@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import img0 from '/img0.png';
 import Login from "./Login";
 import Signup from "./Signup";
 
@@ -63,10 +64,9 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
     }
   };
 
-  // Build logo source: prefer local img0.png, fallback to Cloudinary if available
+  // Build logo source: use imported img0.png
   const getLogoSrc = () => {
-    // Always try local img0.png first
-    return '/img0.png';
+    return img0;
   };
 
   // handleLogout kept previously for header integration; not used here after cleanup

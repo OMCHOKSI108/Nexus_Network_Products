@@ -1,5 +1,5 @@
 import React from "react";
-import { CLOUDINARY_LOGO } from '../config/api';
+import img0 from '/img0.png';
 import { Link } from "react-router-dom";
 
 const Footer = () => {
@@ -10,7 +10,7 @@ const Footer = () => {
           {/* Company Info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-3 mb-4">
-              <img src="/img0.png" alt="NexusNetwork" className="h-10 w-20 object-contain" />
+              <img src={img0} alt="NexusNetwork" className="h-10 w-20 object-contain" />
               <div>
                 <h3 className="text-xl font-bold text-white">NexusNetwork</h3>
                 <p className="text-gray-400 text-sm">Premium Brass Parts</p>
