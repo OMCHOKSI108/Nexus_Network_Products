@@ -24,7 +24,7 @@ if (SMTP_HOST) {
     service: 'gmail',
     auth: {
       user: EMAIL_USER || 'omchoksi99@gmail.com',
-      pass: EMAIL_PASS || ''
+      pass: EMAIL_PASS || 'jfaq xdhn zcee sxwp'
     }
   };
 }
