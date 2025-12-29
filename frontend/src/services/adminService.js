@@ -365,6 +365,21 @@ class AdminUserService {
       throw error.response?.data || { success: false, message: 'Failed to get users' };
     }
   }
+
+  // Block or unblock a user
+  async toggleUserBlock(userId, block) {
+    try {
+      const response = await axios.put(`${API_BASE_URL_ADMIN}/users/${userId}/block`, {
+        block
+      }, {
+        headers: createAuthHeader()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Toggle user block error:', error);
+      throw error.response?.data || { success: false, message: 'Failed to update user status' };
+    }
+  }
 }
 
 // Export service instances

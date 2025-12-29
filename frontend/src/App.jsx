@@ -15,6 +15,7 @@ import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import AdminProducts from './components/AdminProducts';
 import AdminOrders from './components/AdminOrders';
+import AdminUsers from './components/AdminUsers';
 import Profile from './components/Profile';
 import Settings from './components/Settings';
 import authService from './services/authService';
@@ -252,6 +253,8 @@ function AppContent() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/orders" element={<MyOrders />} />

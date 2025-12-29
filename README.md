@@ -147,6 +147,52 @@ NexusNetwork/
 
 ---
 
+## Screenshots
+
+### 🏠 Home Page
+<div align="center">
+  <img src="docs/postman/home_page.png" alt="Home Page" width="800"/>
+  <p><em>Main landing page with featured products and navigation</em></p>
+</div>
+
+### 📊 Admin Dashboard
+<div align="center">
+  <img src="docs/postman/admin_dashboard.png" alt="Admin Dashboard" width="800"/>
+  <p><em>Comprehensive admin panel with overview statistics</em></p>
+</div>
+
+### 🛍️ Products Catalog
+<div align="center">
+  <img src="docs/postman/Products.png" alt="Products Page" width="800"/>
+  <p><em>Product catalog with search and filtering capabilities</em></p>
+</div>
+
+### 👥 User Management
+<div align="center">
+  <img src="docs/postman/admin_manage_user.png" alt="User Management" width="800"/>
+  <p><em>Admin interface for managing registered users</em></p>
+</div>
+
+### 🛒 Shopping Cart
+<div align="center">
+  <img src="docs/postman/Cart.png" alt="Shopping Cart" width="800"/>
+  <p><em>Cart management with add/remove functionality</em></p>
+</div>
+
+### 🔐 Authentication
+<div align="center">
+  <img src="docs/postman/Login.png" alt="Login Page" width="800"/>
+  <p><em>Secure user authentication system</em></p>
+</div>
+
+### 📦 Order Management
+<div align="center">
+  <img src="docs/postman/Order_placed.png" alt="Order Confirmation" width="800"/>
+  <p><em>Order placement and confirmation flow</em></p>
+</div>
+
+---
+
 ## Project Goals & Learning Outcomes
 
 ### Technical Skills Demonstrated

@@ -120,7 +120,17 @@ const AdminDashboard = () => {
             </div>
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => navigate('/admin/products')}
+                onClick={() => navigate('/admin/users')}
+                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+              >
+                Manage Users
+              </button>
+              <button                onClick={() => navigate('/admin/users')}
+                className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+              >
+                Manage Users
+              </button>
+              <button                onClick={() => navigate('/admin/products')}
                 className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
               >
                 Manage Products
