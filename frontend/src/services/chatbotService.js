@@ -9,10 +9,17 @@ class ChatbotService {
   async sendMessage(message, sessionId) {
     try {
       const token = localStorage.getItem('token');
+      console.log('[CHATBOT SERVICE] Sending message...');
+      console.log('[CHATBOT SERVICE] Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'NULL');
+      console.log('[CHATBOT SERVICE] SessionId:', sessionId);
+      
       const headers = {};
       
       if (token) {
         headers.Authorization = `Bearer ${token}`;
+        console.log('[CHATBOT SERVICE] Authorization header set:', headers.Authorization.substring(0, 30) + '...');
+      } else {
+        console.log('[CHATBOT SERVICE] No token found, sending as guest');
       }
 
       const response = await axios.post(
@@ -21,6 +28,7 @@ class ChatbotService {
         { headers }
       );
 
+      console.log('[CHATBOT SERVICE] Response received:', { success: response.data.success, isAuthenticated: response.data.isAuthenticated });
       return response.data;
     } catch (error) {
       console.error('Error sending message:', error);
@@ -142,19 +150,23 @@ class ChatbotService {
   }
 
   /**
-   * Chatbot cart actions
+   * Chatbot cart actions - Updated to use new endpoint
    */
   
-  async addToCart(productId, quantity = 1) {
+  async addToCart(productId, quantity = 1, sessionId = null) {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
-        throw new Error('Authentication required');
+        return {
+          success: false,
+          message: '🔐 Please login to add items to cart',
+          requiresAuth: true
+        };
       }
 
       const response = await axios.post(
-        `${API_URL}/chatbot/cart/add`,
-        { productId, quantity },
+        `${API_URL}/chatbot/action/add-to-cart`,
+        { productId, quantity, sessionId },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
@@ -163,8 +175,7 @@ class ChatbotService {
       console.error('Error adding to cart:', error);
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to add to cart',
-        naturalResponse: true
+        message: error.response?.data?.message || 'Failed to add to cart'
       };
     }
   }

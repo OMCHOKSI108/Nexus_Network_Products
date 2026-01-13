@@ -9,8 +9,9 @@ const generateToken = (userId) => {
   
   return jwt.sign(
     { 
-      userId,
-      id: userId // For compatibility
+      _id: userId,
+      id: userId,
+      userId: userId // Keep for backward compatibility
     }, 
     JWT_SECRET, 
     { 
