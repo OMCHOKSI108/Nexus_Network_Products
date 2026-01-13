@@ -1,0 +1,564 @@
+================================================================================
+                    NEXUS NETWORK PRODUCTS - PROJECT DOCUMENTATION
+================================================================================
+
+Project Name: Nexus Network Products
+Version: 1.0.0
+Type: B2B E-Commerce Platform
+Created: 2025-2026
+Last Updated: January 13, 2026
+
+================================================================================
+                              PROJECT OVERVIEW
+================================================================================
+
+Nexus Network Products is a comprehensive B2B e-commerce platform specializing 
+in brass fittings, cable gland accessories, pressure gauge parts, pneumatic 
+components, and air conditioning/refrigeration parts. The platform provides a 
+modern, user-friendly interface for businesses to browse, order, and manage 
+their industrial parts procurement.
+
+================================================================================
+                           TECHNOLOGY STACK
+================================================================================
+
+FRONTEND:
+- Framework: React 18.3.1 (with Vite 6.0.5)
+- UI Library: Tailwind CSS 3.4.17
+- Routing: React Router DOM 7.1.1
+- HTTP Client: Axios 1.7.9
+- Build Tool: Vite
+- Deployment: Vercel
+
+BACKEND:
+- Runtime: Node.js 
+- Framework: Express.js 4.21.2
+- Database: MongoDB (Mongoose ODM 8.9.4)
+- Authentication: JWT (jsonwebtoken 9.0.2)
+- Password Hashing: bcryptjs 2.4.3
+- File Upload: Multer 1.4.5-lts.1
+- Cloud Storage: Cloudinary 2.6.0
+- Email: Nodemailer 6.9.17
+- Rate Limiting: express-rate-limit 7.5.0
+- Security: Helmet 8.0.0, express-mongo-sanitize 2.2.0
+- CORS: cors 2.8.5
+- Environment: dotenv 16.4.7
+- Development: Nodemon 3.1.11
+
+AI/LLM INTEGRATION:
+- LLM Provider: Groq (groq-sdk 0.9.0)
+- RAG Service: Custom implementation with vector search
+- Chatbot: Interactive AI assistant with product recommendations
+
+================================================================================
+                              PROJECT STRUCTURE
+================================================================================
+
+BACKEND (server/)
+├── config/
+│   └── email.js                 # Email configuration
+├── middleware/
+│   ├── auth.js                  # JWT authentication middleware
+│   └── adminAuth.js             # Admin-specific authentication
+├── models/
+│   ├── User.js                  # User schema
+│   ├── Product.js               # Product schema
+│   ├── Cart.js                  # Shopping cart schema
+│   ├── Order.js                 # Order schema
+│   └── Conversation.js          # Chatbot conversation schema
+├── routes/
+│   ├── userRoutes.js            # User authentication & profile
+│   ├── productRoutes.js         # Product CRUD operations
+│   ├── cartRoutes.js            # Cart management
+│   ├── orderRoutes.js           # Order processing
+│   ├── chatbotRoutes.js         # AI chatbot endpoints
+│   └── adminAuthRoutes.js       # Admin authentication
+├── services/
+│   ├── groqService.js           # Groq LLM integration
+│   ├── ragService.js            # RAG context retrieval
+│   └── emailService.js          # Email notifications
+├── utils/
+│   └── generateToken.js         # JWT token generation
+├── scripts/
+│   ├── seed-products-b2b.js     # Product database seeding
+│   ├── reset-users.js           # User management
+│   └── clear-chatbot-conversations.js
+├── images/                      # Local product images
+├── uploads/                     # Temporary upload directory
+├── server.js                    # Main application entry point
+└── .env                         # Environment variables
+
+FRONTEND (frontend/)
+├── public/
+│   ├── img0.png                 # Logo (now on Cloudinary)
+│   └── products/                # Product images
+├── src/
+│   ├── assets/                  # Static assets
+│   ├── components/
+│   │   ├── Navbar.jsx           # Navigation bar
+│   │   ├── Footer.jsx           # Footer component
+│   │   ├── Home.jsx             # Landing page
+│   │   ├── Login.jsx            # Login modal
+│   │   ├── Signup.jsx           # Registration modal
+│   │   ├── ProductList.jsx      # Product catalog
+│   │   ├── ProductDetail.jsx    # Product details page
+│   │   ├── Cart.jsx             # Shopping cart
+│   │   ├── Checkout.jsx         # Checkout process
+│   │   ├── Orders.jsx           # Order history
+│   │   ├── Profile.jsx          # User profile
+│   │   └── ChatBot.jsx          # AI chatbot interface
+│   ├── config/
+│   │   ├── api.js               # API configuration
+│   │   └── assets.js            # Cloudinary asset URLs
+│   ├── services/
+│   │   ├── authService.js       # Authentication API calls
+│   │   ├── productService.js    # Product API calls
+│   │   ├── cartService.js       # Cart API calls
+│   │   ├── orderService.js      # Order API calls
+│   │   └── chatbotService.js    # Chatbot API calls
+│   ├── App.jsx                  # Main application component
+│   ├── main.jsx                 # Application entry point
+│   └── index.css                # Global styles
+├── index.html                   # HTML template
+├── vite.config.js               # Vite configuration
+├── tailwind.config.js           # Tailwind CSS configuration
+├── postcss.config.js            # PostCSS configuration
+├── package.json                 # Frontend dependencies
+└── vercel.json                  # Vercel deployment config
+
+================================================================================
+                           WEBSITE INFORMATION
+================================================================================
+
+Business Name: Nexus Network Products
+Tagline: Premium Brass Parts & Industrial Components
+Industry: B2B Manufacturing & Distribution
+
+PRODUCT CATEGORIES:
+1. Brass Fitting
+   - Brass adapters, connectors, elbows, tees
+   - Male/female threaded fittings
+   - Compression fittings
+   
+2. Brass Insert
+   - Threaded inserts for plastic/wood
+   - Knurled brass inserts
+   - Heat-set inserts
+
+3. Cable Gland Accessories
+   - Cable glands (various sizes)
+   - Lock nuts, washers
+   - Earthing accessories
+   - Strain relief components
+
+4. Pressure Gauge Parts
+   - Gauge connections
+   - Syphons
+   - Gauge valves
+   - Gauge adapters
+
+5. Pneumatic Parts (Panumatic Part)
+   - Air fittings
+   - Quick connectors
+   - Push-to-connect fittings
+   - Pneumatic valves
+
+6. Air Conditioners and Refrigeration Parts
+   - AC fittings
+   - Refrigerant connectors
+   - Valves and adapters
+   - Brazing fittings
+
+BUSINESS MODEL:
+- B2B focused platform
+- Minimum order quantities
+- Bulk pricing available
+- Custom quotations on request
+- Registered business accounts required
+
+CONTACT INFORMATION:
+- Website: [Your Production URL]
+- Support Email: Configure in server/.env (EMAIL_USER)
+- Business Hours: Monday - Saturday, 9 AM - 6 PM
+
+================================================================================
+                        ENVIRONMENT CONFIGURATION
+================================================================================
+
+REQUIRED ENVIRONMENT VARIABLES (.env):
+
+SERVER CONFIGURATION:
+PORT=5000
+NODE_ENV=production
+MONGODB_URI=mongodb+srv://your-mongodb-connection-string
+JWT_SECRET=your-super-secure-jwt-secret-key
+
+CLOUDINARY (Image Storage):
+CLOUDINARY_CLOUD_NAME=de6dvjesr
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=your-cloudinary-api-secret
+
+EMAIL SERVICE (Nodemailer):
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-app-password
+EMAIL_FROM=Nexus Network <your-email@gmail.com>
+
+GROQ LLM API:
+GROQ_API_KEY=your-groq-api-key
+
+FRONTEND API:
+VITE_API_URL=https://your-backend-url.com/api
+
+ADMIN CREDENTIALS:
+ADMIN_EMAIL=admin@nexusnetwork.com
+ADMIN_PASSWORD=your-admin-password
+
+================================================================================
+                              KEY FEATURES
+================================================================================
+
+USER FEATURES:
+✅ User Registration & Authentication (JWT)
+✅ Email verification with OTP
+✅ Password reset functionality
+✅ User profile management
+✅ Address management for shipping
+
+PRODUCT FEATURES:
+✅ Product catalog with categories
+✅ Advanced search and filtering
+✅ Product details with specifications
+✅ Product images hosted on Cloudinary
+✅ Stock quantity tracking
+✅ Price display in INR (₹)
+
+SHOPPING FEATURES:
+✅ Shopping cart management
+✅ Add/remove/update cart items
+✅ Real-time cart count
+✅ Checkout process
+✅ Order placement
+✅ Order history & tracking
+✅ Order status updates
+
+AI CHATBOT FEATURES:
+✅ Interactive AI assistant powered by Groq LLM
+✅ Product recommendations
+✅ Natural language queries
+✅ RAG (Retrieval-Augmented Generation) for context
+✅ Interactive product cards with:
+   - Large product images with zoom effect
+   - Quantity selector
+   - Add to Cart button
+   - Buy Now (instant checkout)
+✅ Authentication-aware responses
+✅ Order history access
+✅ Cart management
+✅ Conversation persistence
+✅ Markdown rendering for formatted responses
+
+ADMIN FEATURES:
+✅ Admin dashboard access
+✅ Product management (CRUD)
+✅ Order management
+✅ User management
+✅ Inventory tracking
+
+SECURITY FEATURES:
+✅ JWT-based authentication
+✅ Password hashing with bcrypt
+✅ Rate limiting on API endpoints
+✅ CORS protection
+✅ MongoDB query sanitization
+✅ Helmet.js security headers
+✅ Input validation
+✅ XSS protection
+
+================================================================================
+                           API ENDPOINTS
+================================================================================
+
+USER AUTHENTICATION (POST /api/users/):
+- POST   /register         Register new user
+- POST   /login            User login
+- GET    /profile          Get user profile (Protected)
+- PUT    /profile          Update profile (Protected)
+- POST   /forgot-password  Request password reset OTP
+- POST   /verify-otp       Verify OTP code
+- POST   /reset-password   Reset password with OTP
+- POST   /logout           User logout
+
+PRODUCTS (GET /api/products/):
+- GET    /                 Get all products (with filters)
+- GET    /:id              Get product by ID
+- GET    /category/:cat    Get products by category
+- GET    /search           Search products
+- POST   /                 Create product (Admin)
+- PUT    /:id              Update product (Admin)
+- DELETE /:id              Delete product (Admin)
+
+CART (GET /api/cart/):
+- GET    /                 Get user cart (Protected)
+- GET    /count            Get cart item count (Protected)
+- POST   /                 Add item to cart (Protected)
+- PUT    /:itemId          Update cart item quantity (Protected)
+- DELETE /:itemId          Remove item from cart (Protected)
+- DELETE /                 Clear entire cart (Protected)
+
+ORDERS (GET /api/orders/):
+- POST   /                 Create new order (Protected)
+- GET    /                 Get user orders (Protected)
+- GET    /:id              Get order details (Protected)
+- PUT    /:id/cancel       Cancel order (Protected)
+- GET    /admin/all        Get all orders (Admin)
+- PUT    /admin/:id/status Update order status (Admin)
+
+CHATBOT (POST /api/chatbot/):
+- POST   /message                    Send message to chatbot
+- GET    /conversation/:sessionId    Get conversation history
+- DELETE /conversation/:sessionId    Delete conversation
+- POST   /action/add-to-cart        Add product to cart from chatbot
+- POST   /feedback                   Submit chatbot feedback
+
+ADMIN (POST /api/admin/):
+- POST   /login            Admin login
+- GET    /verify           Verify admin token
+- POST   /logout           Admin logout
+
+================================================================================
+                           DATABASE MODELS
+================================================================================
+
+USER MODEL:
+- username (String, required, validated)
+- name (String)
+- email (String, required, unique, validated)
+- password (String, required, hashed)
+- phone (String)
+- company (String)
+- gstNumber (String)
+- address (Object with full shipping details)
+- profileImage (String)
+- resetOtp (String for password reset)
+- resetOtpExpires (Date)
+- lastLogin (Date)
+- timestamps (createdAt, updatedAt)
+
+PRODUCT MODEL:
+- name (String, required)
+- description (String, required)
+- price (Number, required)
+- category (String, required)
+- image (String - Cloudinary URL)
+- stockQuantity (Number, default: 0)
+- inStock (Boolean, default: true)
+- sku (String, unique)
+- specifications (Object)
+- minOrderQuantity (Number, default: 1)
+- isActive (Boolean, default: true)
+- timestamps
+
+CART MODEL:
+- userId (ObjectId, ref: User, required)
+- items (Array of):
+  - productId (ObjectId, ref: Product)
+  - productName (String)
+  - quantity (Number)
+  - price (Number)
+  - image (String)
+  - subtotal (Number)
+- totalAmount (Number)
+- totalItems (Number)
+- timestamps
+
+ORDER MODEL:
+- user (ObjectId, ref: User, required)
+- orderNumber (String, unique, auto-generated)
+- items (Array of order items)
+- totalAmount (Number, required)
+- shippingAddress (Object)
+- status (String: pending, confirmed, processing, shipped, delivered, cancelled)
+- paymentMethod (String)
+- paymentStatus (String)
+- trackingNumber (String)
+- notes (String)
+- timestamps
+
+CONVERSATION MODEL (Chatbot):
+- userId (ObjectId, ref: User, nullable)
+- sessionId (String, required, indexed)
+- messages (Array of):
+  - role (String: user, assistant, system)
+  - content (String)
+  - timestamp (Date)
+  - metadata (Object)
+- context:
+  - isAuthenticated (Boolean)
+  - lastActivity (Date)
+  - relevantProducts (Array of Product refs)
+  - cartInteraction (Boolean)
+  - orderInteraction (Boolean)
+- status (String: active, archived, ended)
+- timestamps
+
+================================================================================
+                        DEPLOYMENT INFORMATION
+================================================================================
+
+FRONTEND DEPLOYMENT (Vercel):
+1. Connected to GitHub repository
+2. Auto-deploys on push to main branch
+3. Build Command: npm run build
+4. Output Directory: dist
+5. Environment Variables configured in Vercel dashboard
+
+BACKEND DEPLOYMENT (Render/Railway/Your Choice):
+1. Environment variables configured
+2. MongoDB Atlas for database
+3. Cloudinary for image storage
+4. Build Command: npm install
+5. Start Command: node server.js
+
+CLOUDINARY ASSETS:
+Logo URL: https://res.cloudinary.com/de6dvjesr/image/upload/v1768322471/nexus-network/logo.png
+Folder Structure: nexus-network/products/
+
+================================================================================
+                         USER CREDENTIALS
+================================================================================
+
+TEST USERS:
+Email: omchoksi99@gmail.com
+Password: password123
+
+Email: hackerchief001@gmail.com
+Password: password123
+
+ADMIN:
+Email: Configure in .env (ADMIN_EMAIL)
+Password: Configure in .env (ADMIN_PASSWORD)
+
+================================================================================
+                      CHATBOT CONFIGURATION
+================================================================================
+
+LLM PROVIDER: Groq
+Model: mixtral-8x7b-32768 (default)
+Temperature: 0.7
+Max Tokens: 1024
+
+FEATURES:
+- Natural language product search
+- Order history queries
+- Cart management assistance
+- Authentication-aware responses
+- Interactive product cards with images
+- Quantity selection
+- Direct add-to-cart functionality
+- Buy now (instant checkout)
+- Conversation memory (last 8 messages)
+- Markdown formatting support
+
+SYSTEM PROMPT INCLUDES:
+- Website information
+- Product categories
+- User authentication state
+- Available actions (login-required vs guest)
+- Professional B2B tone
+- Helpful, concise responses
+
+================================================================================
+                        DESIGN SYSTEM
+================================================================================
+
+COLOR PALETTE:
+Primary Brass: #C39A2E
+Secondary Navy: #1f2937
+Blue Actions: #1d4ed8 (blue-700)
+Success Green: #10b981
+Error Red: #ef4444
+Gray Shades: #f9fafb, #e5e7eb, #6b7280, #374151
+
+TYPOGRAPHY:
+Font Family: System fonts (Tailwind default)
+Headings: Bold, various sizes
+Body Text: Regular weight
+Buttons: Bold/Semibold
+
+RESPONSIVE BREAKPOINTS:
+sm: 640px
+md: 768px
+lg: 1024px
+xl: 1280px
+2xl: 1536px
+
+================================================================================
+                      DEVELOPMENT SCRIPTS
+================================================================================
+
+BACKEND (server/):
+npm start              - Start production server
+npm run dev            - Start development server with nodemon
+node seed-products-b2b.js - Seed products database
+node reset-users.js    - Reset users with new credentials
+node clear-chatbot-conversations.js - Clear chatbot history
+node check-user-token.js - Verify JWT token structure
+node upload-logo-to-cloudinary.js - Upload logo to Cloudinary
+
+FRONTEND (frontend/):
+npm run dev            - Start development server
+npm run build          - Build for production
+npm run preview        - Preview production build
+npm run lint           - Run ESLint
+
+================================================================================
+                        FUTURE ENHANCEMENTS
+================================================================================
+
+PLANNED FEATURES:
+- Payment gateway integration (Razorpay/Stripe)
+- Advanced product filtering
+- Product comparison
+- Wishlist functionality
+- Review and rating system
+- Bulk order discounts
+- Invoice generation
+- Inventory alerts
+- Analytics dashboard
+- Multi-language support
+- Mobile app (React Native)
+- Progressive Web App (PWA)
+
+================================================================================
+                          SUPPORT & MAINTENANCE
+================================================================================
+
+MONITORING:
+- Server logs with Morgan
+- Error tracking
+- Database backup schedule
+- Security updates
+
+PERFORMANCE:
+- Image optimization via Cloudinary
+- Code splitting with React lazy loading
+- Caching strategies
+- CDN for static assets
+
+BACKUP:
+- Daily MongoDB backups
+- Code version control (Git)
+- Environment variable backup
+
+================================================================================
+                              CONTACT
+================================================================================
+
+Developer: [Your Name/Team]
+Project Repository: [Your GitHub URL]
+Documentation: This file
+Last Updated: January 13, 2026
+
+================================================================================
+                           END OF DOCUMENTATION
+================================================================================

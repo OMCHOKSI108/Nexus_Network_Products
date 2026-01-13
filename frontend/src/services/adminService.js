@@ -208,6 +208,19 @@ class AdminDashboardService {
       throw error.response?.data || { success: false, message: 'Failed to get dashboard data' };
     }
   }
+
+  // Get dashboard charts data
+  async getDashboardCharts(period = '7d') {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/admin-panel/dashboard/charts?period=${period}`, {
+        headers: createAuthHeader()
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Get dashboard charts error:', error);
+      throw error.response?.data || { success: false, message: 'Failed to get chart data' };
+    }
+  }
 }
 
 // Admin Product Service

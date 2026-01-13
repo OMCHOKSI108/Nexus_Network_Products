@@ -1,12 +1,33 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { adminAuthService, adminDashboardService } from '../services/adminService';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  AreaChart,
+  Area,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer
+} from 'recharts';
 
 const AdminDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
+  const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  // Chart colors
+  const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#14B8A6', '#F97316'];
 
   const fetchDashboardData = useCallback(async () => {
     try {
@@ -19,11 +40,19 @@ const AdminDashboard = () => {
         return;
       }
       
-      const response = await adminDashboardService.getDashboardOverview();
-      if (response.success) {
-        setDashboardData(response.data);
+      const [overviewResponse, chartsResponse] = await Promise.all([
+        adminDashboardService.getDashboardOverview(),
+        adminDashboardService.getDashboardCharts('7d')
+      ]);
+
+      if (overviewResponse.success) {
+        setDashboardData(overviewResponse.data);
       } else {
-        setError(response.message || 'Failed to load dashboard data');
+        setError(overviewResponse.message || 'Failed to load dashboard data');
+      }
+
+      if (chartsResponse.success) {
+        setChartData(chartsResponse.data);
       }
     } catch (error) {
       console.error('Dashboard data fetch error:', error);
@@ -168,7 +197,7 @@ const AdminDashboard = () => {
                 <div className="ml-5 w-0 flex-1">
                   <dl>
                     <dt className="text-sm font-medium text-gray-500 truncate">Total Products</dt>
-                    <dd className="text-lg font-medium text-gray-900">{overview?.totalProducts || 0}</dd>
+                    <dd className="text-lg font-medium text-gray-900">{overview?.products?.total || 0}</dd>
                   </dl>
                 </div>
               </div>
@@ -188,7 +217,7 @@ const AdminDashboard = () => {
                 <div className="ml-5 w-0 flex-1">
                   <dl>
                     <dt className="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                    <dd className="text-lg font-medium text-gray-900">{overview?.totalUsers || 0}</dd>
+                    <dd className="text-lg font-medium text-gray-900">{overview?.users?.total || 0}</dd>
                   </dl>
                 </div>
               </div>
@@ -208,7 +237,7 @@ const AdminDashboard = () => {
                 <div className="ml-5 w-0 flex-1">
                   <dl>
                     <dt className="text-sm font-medium text-gray-500 truncate">Total Orders</dt>
-                    <dd className="text-lg font-medium text-gray-900">{overview?.totalOrders || 0}</dd>
+                    <dd className="text-lg font-medium text-gray-900">{overview?.orders?.total || 0}</dd>
                   </dl>
                 </div>
               </div>
@@ -227,8 +256,8 @@ const AdminDashboard = () => {
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
-                    <dd className="text-lg font-medium text-gray-900">{formatCurrency(overview?.totalRevenue || 0)}</dd>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue (Month)</dt>
+                    <dd className="text-lg font-medium text-gray-900">{formatCurrency(overview?.revenue?.month || 0)}</dd>
                   </dl>
                 </div>
               </div>
@@ -247,14 +276,128 @@ const AdminDashboard = () => {
                 </div>
                 <div className="ml-5 w-0 flex-1">
                   <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">Avg Order Value</dt>
-                    <dd className="text-lg font-medium text-gray-900">{formatCurrency(overview?.averageOrderValue || 0)}</dd>
+                    <dt className="text-sm font-medium text-gray-500 truncate">Pending Orders</dt>
+                    <dd className="text-lg font-medium text-gray-900">{overview?.orders?.pending || 0}</dd>
                   </dl>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Charts Section */}
+        {chartData && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Revenue Trend Chart */}
+            <div className="bg-white shadow rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Trend (Last 7 Days)</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={chartData.dailyStats}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip 
+                    formatter={(value) => new Intl.NumberFormat('en-IN', {
+                      style: 'currency',
+                      currency: 'INR'
+                    }).format(value)}
+                  />
+                  <Area 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#3B82F6" 
+                    fillOpacity={1} 
+                    fill="url(#colorRevenue)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Orders Chart */}
+            <div className="bg-white shadow rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Orders Per Day (Last 7 Days)</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={chartData.dailyStats}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="orders" fill="#10B981" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Category Revenue Pie Chart */}
+            <div className="bg-white shadow rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue by Category</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={chartData.categoryRevenue}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ category, percent }) => `${category}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="revenue"
+                  >
+                    {chartData.categoryRevenue.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value) => new Intl.NumberFormat('en-IN', {
+                      style: 'currency',
+                      currency: 'INR'
+                    }).format(value)}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Combined Revenue & Orders Line Chart */}
+            <div className="bg-white shadow rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue & Orders Comparison</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={chartData.dailyStats}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis yAxisId="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <Tooltip />
+                  <Legend />
+                  <Line 
+                    yAxisId="left"
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#3B82F6" 
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                    name="Revenue (₹)"
+                  />
+                  <Line 
+                    yAxisId="right"
+                    type="monotone" 
+                    dataKey="orders" 
+                    stroke="#10B981" 
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                    name="Orders"
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Orders */}

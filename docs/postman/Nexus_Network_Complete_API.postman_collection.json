@@ -1,0 +1,1244 @@
+{
+	"info": {
+		"_postman_id": "nexus-complete-api-2026",
+		"name": "Nexus Network Products - Complete API Collection",
+		"description": "Complete API collection for Nexus Network Products B2B E-Commerce Platform\n\nIncludes:\n- User Authentication\n- Product Management\n- Cart & Orders\n- Admin Panel (Dashboard, User Management, Products, Orders, Revenue, Logs, Security, Chatbot)\n- AI Chatbot\n\nVersion: 2.0\nLast Updated: January 13, 2026",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "👤 User Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Test User\",\n  \"username\": \"Test User\",\n  \"email\": \"testuser@example.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"authToken\", jsonData.token);",
+									"    console.log(\"Token saved:\", jsonData.token);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"omchoksi99@gmail.com\",\n  \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get User Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"phone\": \"9876543210\",\n  \"company\": \"My Company\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "profile"]
+						}
+					}
+				},
+				{
+					"name": "Forgot Password - Request OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"testuser@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/forgot-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "forgot-password"]
+						}
+					}
+				},
+				{
+					"name": "Verify OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"testuser@example.com\",\n  \"otp\": \"123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/verify-otp",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "verify-otp"]
+						}
+					}
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"testuser@example.com\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/users/reset-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "reset-password"]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/users/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "users", "logout"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📦 Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "category",
+									"value": "brass fitting",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "adapter",
+									"disabled": true
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Product by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "product_id_here"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Search Products",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/search?q=brass",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "search"],
+							"query": [
+								{
+									"key": "q",
+									"value": "brass"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Products by Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/products/category/:category",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "products", "category", ":category"],
+							"variable": [
+								{
+									"key": "category",
+									"value": "brass fitting"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🛒 Cart",
+			"item": [
+				{
+					"name": "Get Cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/cart",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "cart"]
+						}
+					}
+				},
+				{
+					"name": "Get Cart Count",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/count",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "cart", "count"]
+						}
+					}
+				},
+				{
+					"name": "Add to Cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"product_id_here\",\n  \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/cart",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "cart"]
+						}
+					}
+				},
+				{
+					"name": "Update Cart Item",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"quantity\": 5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/:itemId",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "cart", ":itemId"],
+							"variable": [
+								{
+									"key": "itemId",
+									"value": "item_id_here"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Remove from Cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/:itemId",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "cart", ":itemId"],
+							"variable": [
+								{
+									"key": "itemId",
+									"value": "item_id_here"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Clear Cart",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/cart",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "cart"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📋 Orders",
+			"item": [
+				{
+					"name": "Create Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"shippingAddress\": {\n    \"fullName\": \"John Doe\",\n    \"addressLine1\": \"123 Main St\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"postalCode\": \"400001\",\n    \"phone\": \"9876543210\"\n  },\n  \"paymentMethod\": \"COD\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/orders",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "orders"]
+						}
+					}
+				},
+				{
+					"name": "Get My Orders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "orders"]
+						}
+					}
+				},
+				{
+					"name": "Get Order by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "orders", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "order_id_here"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Cancel Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/:id/cancel",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "orders", ":id", "cancel"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "order_id_here"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🤖 Chatbot",
+			"item": [
+				{
+					"name": "Send Message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"message\": \"Show me brass fittings\",\n  \"sessionId\": \"session_12345\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/chatbot/message",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "chatbot", "message"]
+						}
+					}
+				},
+				{
+					"name": "Get Conversation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/chatbot/conversation/:sessionId",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "chatbot", "conversation", ":sessionId"],
+							"variable": [
+								{
+									"key": "sessionId",
+									"value": "session_12345"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Conversation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/chatbot/conversation/:sessionId",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "chatbot", "conversation", ":sessionId"],
+							"variable": [
+								{
+									"key": "sessionId",
+									"value": "session_12345"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Add to Cart from Chatbot",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{authToken}}"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"product_id_here\",\n  \"quantity\": 1,\n  \"sessionId\": \"session_12345\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/chatbot/action/add-to-cart",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "chatbot", "action", "add-to-cart"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "🔐 Admin Authentication",
+			"item": [
+				{
+					"name": "Admin Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set(\"adminToken\", jsonData.token);",
+									"    console.log(\"Admin Token saved:\", jsonData.token);",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"{{adminEmail}}\",\n  \"password\": \"{{adminPassword}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Verify Admin Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/auth/verify",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "auth", "verify"]
+						}
+					}
+				},
+				{
+					"name": "Admin Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "auth", "logout"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📊 Admin Panel - Dashboard",
+			"item": [
+				{
+					"name": "Get Dashboard Overview",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin-panel/dashboard/overview",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin-panel", "dashboard", "overview"]
+						},
+						"description": "Returns complete business snapshot:\n- Revenue (today, week, month)\n- Orders (total, today, pending)\n- Users (total, active, blocked, new)\n- Products (total, active, low stock)\n- Security alerts\n- Recent activity"
+					}
+				},
+				{
+					"name": "Get Dashboard Charts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin-panel/dashboard/charts?period=7d",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin-panel", "dashboard", "charts"],
+							"query": [
+								{
+									"key": "period",
+									"value": "7d",
+									"description": "Options: 7d, 30d, 90d, 1y"
+								}
+							]
+						},
+						"description": "Returns chart data:\n- Daily revenue and orders\n- Category-wise revenue breakdown"
+					}
+				}
+			]
+		},
+		{
+			"name": "👥 Admin Panel - User Management",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin-panel/users?page=1&limit=20&status=all",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin-panel", "users"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "search",
+									"value": "john",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "all",
+									"description": "Options: all, active, blocked, deleted"
+								},
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"disabled": true
+								},
+								{
+									"key": "order",
+									"value": "desc",
+									"disabled": true
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin-panel/users/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin-panel", "users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "user_id_here"
+								}
+							]
+						},
+						"description": "Returns:\n- User profile\n- Order statistics\n- Total spent\n- Activity timeline (last 50 activities)"
+					}
+				},
+				{
+					"name": "Block User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"Suspicious activity detected\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin-panel/users/:id/block",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin-panel", "users", ":id", "block"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "user_id_here"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Unblock User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin-panel/users/:id/unblock",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin-panel", "users", ":id", "unblock"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "user_id_here"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete User (Soft)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin-panel/users/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin-panel", "users", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "user_id_here"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete User (Permanent)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin-panel/users/:id?permanent=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin-panel", "users", ":id"],
+							"query": [
+								{
+									"key": "permanent",
+									"value": "true"
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "user_id_here"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Export Users to CSV",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin-panel/users/export/csv",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin-panel", "users", "export", "csv"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📦 Admin Panel - Products",
+			"item": [
+				{
+					"name": "Create Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Brass Elbow Fitting\",\n  \"description\": \"High quality brass elbow fitting\",\n  \"price\": 150,\n  \"category\": \"brass fitting\",\n  \"stockQuantity\": 100,\n  \"sku\": \"BRS-ELB-001\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "products"]
+						}
+					}
+				},
+				{
+					"name": "Update Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Product Name\",\n  \"price\": 200,\n  \"stockQuantity\": 150\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/products/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "products", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "product_id_here"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Product",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/products/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "products", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "product_id_here"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get All Products (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/admin/products",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "admin", "products"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "📋 Admin Panel - Orders",
+			"item": [
+				{
+					"name": "Get All Orders (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/admin/all",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "orders", "admin", "all"]
+						}
+					}
+				},
+				{
+					"name": "Update Order Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{adminToken}}"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"shipped\",\n  \"trackingNumber\": \"TRACK123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/orders/admin/:id/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "orders", "admin", ":id", "status"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "order_id_here"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}

@@ -53,7 +53,22 @@ const userSchema = new mongoose.Schema(
       }
     },
     password: { type: String, required: true, minlength: 6 },
-    lastLogin: { type: Date, default: null }
+    lastLogin: { type: Date, default: null },
+    
+    // Admin control fields
+    isBlocked: { type: Boolean, default: false },
+    blockReason: { type: String },
+    blockedAt: { type: Date },
+    blockedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    isDeleted: { type: Boolean, default: false },
+    deletedAt: { type: Date },
+    deletedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    
+    // User tagging for admin
+    tags: [{
+      type: String,
+      enum: ['VIP', 'BULK_BUYER', 'INACTIVE', 'RISKY', 'NEW']
+    }]
   },
   { timestamps: true }
 );
