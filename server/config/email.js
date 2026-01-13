@@ -85,7 +85,121 @@ const sendContactEmail = async (formData) => {
   }
 };
 
-module.exports = { sendContactEmail };
+// Send password reset OTP email
+const sendPasswordResetOTP = async (userEmail, otp, userName) => {
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || EMAIL_USER || 'no-reply@nexusnetwork',
+    to: userEmail,
+    subject: 'Password Reset OTP - Nexus Network',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">🔐 Password Reset</h1>
+        </div>
+        
+        <div style="padding: 30px; background-color: #ffffff;">
+          <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">Hello ${userName || 'User'},</p>
+          
+          <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+            We received a request to reset your password for your Nexus Network account. Use the OTP below to reset your password:
+          </p>
+          
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; text-align: center; margin: 30px 0;">
+            <p style="font-size: 14px; color: #6b7280; margin: 0 0 10px 0;">Your OTP Code:</p>
+            <div style="font-size: 36px; font-weight: bold; color: #1e40af; letter-spacing: 8px; font-family: 'Courier New', monospace;">
+              ${otp}
+            </div>
+          </div>
+          
+          <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #92400e; font-size: 14px;">
+              <strong>⏰ This OTP will expire in 10 minutes.</strong>
+            </p>
+          </div>
+          
+          <p style="font-size: 14px; color: #6b7280; line-height: 1.6; margin-top: 20px;">
+            If you didn't request a password reset, please ignore this email or contact support if you have concerns.
+          </p>
+        </div>
+        
+        <div style="background-color: #f9fafb; padding: 20px; border-radius: 0 0 8px 8px; text-align: center; border-top: 1px solid #e0e0e0;">
+          <p style="margin: 0; color: #6b7280; font-size: 12px;">
+            This is an automated email from Nexus Network Products
+          </p>
+          <p style="margin: 5px 0 0 0; color: #9ca3af; font-size: 12px;">
+            © ${new Date().getFullYear()} Nexus Network. All rights reserved.
+          </p>
+        </div>
+      </div>
+    `
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Password reset OTP email sent:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('❌ Error sending password reset email:', error);
+    throw error;
+  }
+};
+
+// Send password reset confirmation email
+const sendPasswordResetConfirmation = async (userEmail, userName) => {
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || EMAIL_USER || 'no-reply@nexusnetwork',
+    to: userEmail,
+    subject: 'Password Reset Successful - Nexus Network',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px; border-radius: 8px 8px 0 0; text-align: center;">
+          <h1 style="color: white; margin: 0; font-size: 28px;">✅ Password Reset Successful</h1>
+        </div>
+        
+        <div style="padding: 30px; background-color: #ffffff;">
+          <p style="font-size: 16px; color: #374151; margin-bottom: 20px;">Hello ${userName || 'User'},</p>
+          
+          <p style="font-size: 16px; color: #374151; line-height: 1.6;">
+            Your password has been successfully reset. You can now log in to your Nexus Network account with your new password.
+          </p>
+          
+          <div style="background-color: #d1fae5; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0;">
+            <p style="margin: 0; color: #065f46; font-size: 14px;">
+              <strong>✓ Your account is secure.</strong> If you didn't make this change, please contact us immediately.
+            </p>
+          </div>
+          
+          <p style="font-size: 14px; color: #6b7280; line-height: 1.6; margin-top: 20px;">
+            For security reasons, we recommend:
+          </p>
+          <ul style="color: #6b7280; font-size: 14px; line-height: 1.8;">
+            <li>Use a strong, unique password</li>
+            <li>Don't share your password with anyone</li>
+            <li>Enable two-factor authentication if available</li>
+          </ul>
+        </div>
+        
+        <div style="background-color: #f9fafb; padding: 20px; border-radius: 0 0 8px 8px; text-align: center; border-top: 1px solid #e0e0e0;">
+          <p style="margin: 0; color: #6b7280; font-size: 12px;">
+            This is an automated email from Nexus Network Products
+          </p>
+          <p style="margin: 5px 0 0 0; color: #9ca3af; font-size: 12px;">
+            © ${new Date().getFullYear()} Nexus Network. All rights reserved.
+          </p>
+        </div>
+      </div>
+    `
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Password reset confirmation email sent:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('❌ Error sending confirmation email:', error);
+    throw error;
+  }
+};
 
 // Transactional emails
 const sendOrderConfirmation = async (userEmail, order) => {
@@ -181,4 +295,12 @@ const sendPasswordResetOtp = async (userEmail, otp) => {
   return info;
 };
 
-module.exports = { sendContactEmail, sendOrderConfirmation, sendOtpEmail, sendReceiptEmail, sendPasswordResetOtp };
+module.exports = { 
+  sendContactEmail, 
+  sendOrderConfirmation, 
+  sendOtpEmail,
+  sendReceiptEmail, 
+  sendPasswordResetOtp,
+  sendPasswordResetOTP,
+  sendPasswordResetConfirmation
+};

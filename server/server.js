@@ -11,6 +11,8 @@ const orderRoutes = require("./routes/orderRoutes");
 const adminAuthRoutes = require("./routes/adminAuthRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const contactRoutes = require("./routes/contactRoutes");
+const chatbotRoutes = require("./routes/chatbotRoutes");
+const chatbotCartRoutes = require("./routes/chatbotCartRoutes");
 
 const app = express();
 
@@ -115,6 +117,8 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin/auth", adminAuthRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/chatbot", chatbotRoutes);
+app.use("/api/chatbot/cart", chatbotCartRoutes);
 
 // Basic health endpoints
 app.get('/', (req, res) => {

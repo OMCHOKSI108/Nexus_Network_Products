@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/User");
 const { generateToken } = require("../utils/generateToken");
 const authenticateToken = require("../middleware/auth");
+const { sendPasswordResetOTP, sendPasswordResetConfirmation } = require("../config/email");
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -70,6 +71,132 @@ router.post("/register", async (req, res) => {
   } catch (error) {
     console.error("⚠️ Registration error:", error);
     res.status(500).json({ success: false, message: "Server error during registration" });
+  }
+});
+
+// ✅ FORGOT PASSWORD - Request OTP
+router.post("/forgot-password", async (req, res) => {
+  try {
+    const { email } = req.body;
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    if (!normalizedEmail) {
+      return res.status(400).json({ success: false, message: "Email is required" });
+    }
+
+    if (!validateEmail(normalizedEmail)) {
+      return res.status(400).json({ success: false, message: "Invalid email address" });
+    }
+
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "User not exists. Please sign up first." 
+      });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Set OTP expiration (10 minutes)
+    const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    
+    user.resetOtp = otp;
+    user.resetOtpExpires = otpExpires;
+    await user.save();
+
+    // Send OTP email
+    try {
+      await sendPasswordResetOTP(user.email, otp, user.username);
+      console.log(`✅ Password reset OTP sent to ${user.email}`);
+    } catch (emailError) {
+      console.error('❌ Failed to send OTP email:', emailError);
+      return res.status(500).json({ 
+        success: false, 
+        message: "Failed to send OTP email. Please try again later." 
+      });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Password reset OTP has been sent to your email" 
+    });
+  } catch (error) {
+    console.error("❌ Forgot password error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
+// ✅ VERIFY OTP AND RESET PASSWORD
+router.post("/reset-password", async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    const normalizedEmail = email?.toLowerCase().trim();
+
+    if (!normalizedEmail || !otp || !newPassword) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Email, OTP, and new password are required" 
+      });
+    }
+
+    if (!validatePassword(newPassword)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Password must be at least 6 characters" 
+      });
+    }
+
+    const user = await User.findOne({ email: normalizedEmail });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    if (!user.resetOtp || !user.resetOtpExpires) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "No password reset request found. Please request a new OTP." 
+      });
+    }
+
+    // Check if OTP is expired
+    if (new Date() > new Date(user.resetOtpExpires)) {
+      user.resetOtp = undefined;
+      user.resetOtpExpires = undefined;
+      await user.save();
+      return res.status(400).json({ 
+        success: false, 
+        message: "OTP has expired. Please request a new one." 
+      });
+    }
+
+    // Verify OTP
+    if (String(user.resetOtp) !== String(otp)) {
+      return res.status(400).json({ success: false, message: "Invalid OTP" });
+    }
+
+    // Reset password (will be hashed by model pre-save hook)
+    user.password = newPassword;
+    user.resetOtp = undefined;
+    user.resetOtpExpires = undefined;
+    await user.save();
+
+    // Send confirmation email
+    try {
+      await sendPasswordResetConfirmation(user.email, user.username);
+    } catch (emailError) {
+      console.error('❌ Failed to send confirmation email:', emailError);
+      // Don't fail the request if email fails
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      message: "Password reset successful! You can now login with your new password." 
+    });
+  } catch (error) {
+    console.error("❌ Reset password error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
 

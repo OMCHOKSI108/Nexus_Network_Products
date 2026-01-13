@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
 import userService from '../services/userService';
 import { useNotification } from './Notification';
+import ForgotPassword from './ForgotPassword';
 
 const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', phone: '', addressLine1: '', city: '', state: '', pincode: '', company: '', gstNumber: '', secondaryPhone: '', socialLinks: '{}' });
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const { addToast } = useNotification();
   const navigate = useNavigate();
 
@@ -164,9 +166,28 @@ const Profile = () => {
               <label className="block text-sm font-medium mb-1">Social Links (JSON)</label>
               <textarea name="socialLinks" value={form.socialLinks} onChange={onChange} className="w-full border rounded px-3 py-2" rows={3} />
             </div>
+
+            <div className="border-t pt-4 mt-6">
+              <h3 className="text-lg font-semibold mb-3">Security</h3>
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Change Password via Email OTP
+              </button>
+            </div>
+
             <button className="bg-blue-700 text-white px-4 py-2 rounded">Save</button>
           </form>
         </div>
+
+        {showForgotPassword && (
+          <ForgotPassword
+            open={showForgotPassword}
+            onClose={() => setShowForgotPassword(false)}
+          />
+        )}
       </div>
     </div>
   );

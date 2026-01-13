@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react';
 import authService from '../services/authService';
 import { FaLock, FaEnvelope } from 'react-icons/fa';
+import ForgotPassword from './ForgotPassword';
 
 export default function Login({ onLoginSuccess, onClose, onSwitchToSignup, open }) {
   const [form, setForm] = useState({ email: '', password: '' });
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const emailRef = useRef(null);
 
   const handleChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -91,7 +93,13 @@ export default function Login({ onLoginSuccess, onClose, onSwitchToSignup, open 
               </label>
 
               <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">&nbsp;</div>
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Forgot Password?
+                </button>
                 <button type="submit" disabled={isLoading} className={`nn-cta text-white font-semibold px-6 py-2 rounded-md transition transform ${isLoading ? 'opacity-60 pointer-events-none' : 'hover:brightness-105'}`}>
                   {isLoading ? 'Signing in…' : 'Sign In'}
                 </button>
@@ -105,6 +113,13 @@ export default function Login({ onLoginSuccess, onClose, onSwitchToSignup, open 
 
           <div className="col-span-5 p-8 bg-gradient-to-b from-transparent to-white/40 flex flex-col justify-center">
             <div className="text-sm text-gray-700">New to NexusNetwork?</div>
+
+      {showForgotPassword && (
+        <ForgotPassword
+          open={showForgotPassword}
+          onClose={() => setShowForgotPassword(false)}
+        />
+      )}
             <h4 className="mt-2 text-lg font-semibold text-gray-900">Create an enterprise account</h4>
             <p className="mt-2 text-sm text-gray-500">Secure, audited access for your procurement and operations teams.</p>
             <button onClick={() => { onSwitchToSignup && onSwitchToSignup(); }} className="mt-6 border border-gray-200 px-4 py-2 rounded-md text-sm hover:bg-gray-50">Create Account</button>

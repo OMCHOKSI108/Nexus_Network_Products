@@ -20,6 +20,7 @@ import Profile from './components/Profile';
 import Settings from './components/Settings';
 import authService from './services/authService';
 import { NotificationProvider, useNotification } from './components/Notification';
+import ChatBot from './components/ChatBot';
 
 function AppContent() {
   const location = window.location; // simple check; kept minimal to avoid hook changes here
@@ -268,6 +269,13 @@ function AppContent() {
           user={user}
           isLoggedIn={isLoggedIn}
           cartUpdateTrigger={cartUpdateTrigger}
+        />
+
+        {/* AI Chatbot */}
+        <ChatBot
+          isAuthenticated={isLoggedIn}
+          onLoginRequired={openLoginModal}
+          onNavigate={(path) => navigate(path)}
         />
       </div>
     
