@@ -525,70 +525,101 @@ const ChatBot = ({ isAuthenticated, onLoginRequired, onNavigate, onCartUpdate })
                 {products.map((product) => (
                   <div
                     key={product._id}
-                    className="bg-white border border-gray-300 rounded-lg overflow-hidden hover:border-gray-400 hover:shadow-md transition-all duration-300"
+                    className="bg-white border border-gray-300 rounded-lg overflow-hidden hover:border-gray-400 hover:shadow-lg transition-all duration-300"
                   >
+                    {/* Product Image - Full Width */}
+                    {product.image && (
+                      <div className="relative overflow-hidden bg-gray-100" style={{ height: '180px' }}>
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          className="w-full h-full object-contain transition-transform duration-300 hover:scale-110 cursor-pointer"
+                          onClick={() => handleProductClick(product._id)}
+                          onError={(e) => {
+                            e.target.src = '/placeholder.png';
+                          }}
+                        />
+                        {/* Stock Badge Overlay */}
+                        <div className="absolute top-2 right-2">
+                          <span className={`text-xs font-bold px-2 py-1 rounded-full shadow-md ${
+                            product.inStock 
+                              ? 'bg-green-500 text-white' 
+                              : 'bg-red-500 text-white'
+                          }`}>
+                            {product.inStock ? `${product.stockQuantity} in stock` : 'Out of Stock'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Product Info */}
                     <div 
                       onClick={() => handleProductClick(product._id)}
-                      className="p-3 cursor-pointer"
+                      className="p-3 cursor-pointer hover:bg-gray-50 transition-colors"
                     >
-                      <div className="flex space-x-3">
-                        {product.image && (
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-20 h-20 object-cover rounded-lg shadow-sm"
-                            onError={(e) => {
-                              e.target.src = '/placeholder.png';
-                            }}
-                          />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <h5 className="font-bold text-sm text-gray-900 line-clamp-2 mb-1">
-                            {product.name}
-                          </h5>
-                          <div className="flex items-center justify-between mb-2">
-                            <p className="text-lg font-bold" style={{ color: '#C39A2E' }}>Rs. {product.price}</p>
-                            <span className={`text-xs px-2 py-1 rounded-full ${
-                              product.inStock 
-                                ? 'bg-green-100 text-green-700' 
-                                : 'bg-red-100 text-red-700'
-                            }`}>
-                              {product.inStock ? `Stock: ${product.stockQuantity}` : 'Out of Stock'}
-                            </span>
-                          </div>
-                          {product.category && (
-                            <p className="text-xs text-gray-500 mb-1">{product.category}</p>
-                          )}
-                        </div>
+                      <h5 className="font-bold text-sm text-gray-900 mb-1 line-clamp-2">
+                        {product.name}
+                      </h5>
+                      
+                      {product.category && (
+                        <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                          </svg>
+                          {product.category}
+                        </p>
+                      )}
+
+                      {product.description && (
+                        <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                          {product.description}
+                        </p>
+                      )}
+
+                      <div className="flex items-center justify-between mt-2">
+                        <p className="text-xl font-bold" style={{ color: '#C39A2E' }}>
+                          ₹{product.price.toLocaleString()}
+                        </p>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleProductClick(product._id);
+                          }}
+                          className="text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1"
+                        >
+                          View Details
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
                       </div>
                     </div>
 
                     {/* Interactive Actions */}
                     {product.canAddToCart && isAuthenticated && (
-                      <div className="bg-gray-50 px-3 py-2 border-t border-gray-200">
-                        <div className="flex items-center justify-between gap-2">
+                      <div className="bg-gray-50 px-3 py-3 border-t border-gray-200">
+                        <div className="flex items-center justify-between gap-2 mb-2">
                           {/* Quantity Selector */}
-                          <div className="flex items-center bg-white border border-gray-300 rounded-lg">
+                          <div className="flex items-center bg-white border-2 border-gray-300 rounded-lg shadow-sm">
                             <button
                               onClick={() => handleQuantityChange(product._id, -1)}
-                              className="px-3 py-1.5 hover:bg-gray-100 transition-colors"
+                              className="px-3 py-2 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                               disabled={productQuantities[product._id] <= 1}
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                              <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
                               </svg>
                             </button>
-                            <span className="px-3 py-1.5 font-semibold text-sm min-w-[40px] text-center border-x border-gray-300">
+                            <div className="px-4 py-2 font-bold text-sm min-w-[50px] text-center border-x-2 border-gray-300 bg-gray-50">
                               {productQuantities[product._id] || 1}
-                            </span>
+                            </div>
                             <button
                               onClick={() => handleQuantityChange(product._id, 1)}
-                              className="px-3 py-1.5 hover:bg-gray-100 transition-colors"
+                              className="px-3 py-2 hover:bg-gray-100 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                               disabled={productQuantities[product._id] >= product.maxQuantity}
                             >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
                               </svg>
                             </button>
                           </div>
@@ -597,11 +628,11 @@ const ChatBot = ({ isAuthenticated, onLoginRequired, onNavigate, onCartUpdate })
                           <button
                             onClick={() => handleAddToCart(product)}
                             disabled={addingToCart[product._id]}
-                            className="flex-1 bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                            className="flex-1 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold px-3 py-2.5 rounded-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                           >
                             {addingToCart[product._id] ? (
                               <>
-                                <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
+                                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
@@ -616,29 +647,34 @@ const ChatBot = ({ isAuthenticated, onLoginRequired, onNavigate, onCartUpdate })
                               </>
                             )}
                           </button>
+                        </div>
 
-                          {/* Buy Now Button */}
-                          <button
-                            onClick={() => handleBuyNow(product)}
-                            disabled={addingToCart[`buy_${product._id}`]}
-                            className="text-white text-xs font-semibold px-3 py-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
-                            style={{ backgroundColor: '#C39A2E' }}
-                            onMouseEnter={(e) => e.target.style.backgroundColor = '#B88622'}
-                            onMouseLeave={(e) => e.target.style.backgroundColor = '#C39A2E'}
-                            title="Buy Now"
-                          >
-                            {addingToCart[`buy_${product._id}`] ? (
-                              <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
+                        {/* Buy Now Button - Full Width */}
+                        <button
+                          onClick={() => handleBuyNow(product)}
+                          disabled={addingToCart[`buy_${product._id}`]}
+                          className="w-full text-white text-xs font-bold px-3 py-2.5 rounded-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                          style={{ backgroundColor: '#C39A2E' }}
+                          onMouseEnter={(e) => e.target.style.backgroundColor = '#B88622'}
+                          onMouseLeave={(e) => e.target.style.backgroundColor = '#C39A2E'}
+                        >
+                          {addingToCart[`buy_${product._id}`] ? (
+                            <>
+                              <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                               </svg>
-                            ) : (
+                              Processing...
+                            </>
+                          ) : (
+                            <>
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                               </svg>
-                            )}
-                          </button>
-                        </div>
+                              Buy Now - Instant Checkout
+                            </>
+                          )}
+                        </button>
                       </div>
                     )}
 
