@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import img0 from '/img0.png';
+import { LOGO_URL } from '../config/assets';
 import Login from "./Login";
 import Signup from "./Signup";
 
@@ -64,9 +64,9 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
     }
   };
 
-  // Build logo source: use imported img0.png
+  // Build logo source: use Cloudinary URL
   const getLogoSrc = () => {
-    return img0;
+    return LOGO_URL;
   };
 
   // handleLogout kept previously for header integration; not used here after cleanup
@@ -139,7 +139,7 @@ const Home = ({ isLoggedIn, onLogin, showLogin, onOpenLogin, onCloseLogin, handl
 
                     {/* Right-side brand logo placed in the blank area - visible on md+ screens */}
                     {/* <img
-                      src="/img0.png"
+                      src={LOGO_URL}
                       alt="NexusNetwork logo"
                       className="hidden md:block absolute top-6 right-8 w-28 h-28 md:w-36 md:h-36 object-contain bg-white p-2 rounded shadow"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}

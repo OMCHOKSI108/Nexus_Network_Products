@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import cartService from "../services/cartService";
-import img0 from '/img0.png';
+import { LOGO_URL } from '../config/assets';
 
 const Navbar = ({ user, isLoggedIn, onLogout, onOpenLogin, onOpenCart, cartUpdateTrigger }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -39,7 +39,7 @@ const Navbar = ({ user, isLoggedIn, onLogout, onOpenLogin, onOpenCart, cartUpdat
           <div className="flex items-center space-x-3">
             {/* Your custom logo */}
             <img
-              src={img0}
+              src={LOGO_URL}
               alt="NexusNetwork Logo"
               className="h-14 w-28 object-contain"
               onError={(e) => {
